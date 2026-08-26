@@ -1,0 +1,212 @@
+/* VEXA Brand Identity Styles */
+
+:root {
+    /* VEXA Color Palette */
+    --vexa-primary: #6C3CE1;
+    --vexa-secondary: #00D4FF;
+    --vexa-accent: #FF3366;
+    --vexa-gold: #FFD700;
+    --vexa-dark: #0A0A0F;
+    --vexa-darker: #050508;
+    --vexa-card: #151520;
+    --vexa-card-hover: #1E1E30;
+    --vexa-glass: rgba(255, 255, 255, 0.03);
+    --vexa-glass-border: rgba(255, 255, 255, 0.08);
+    
+    /* Glow Effects */
+    --vexa-glow-primary: 0 0 20px rgba(108, 60, 225, 0.5);
+    --vexa-glow-secondary: 0 0 20px rgba(0, 212, 255, 0.5);
+    --vexa-glow-accent: 0 0 20px rgba(255, 51, 102, 0.5);
+    --vexa-glow-gold: 0 0 20px rgba(255, 215, 0, 0.5);
+    
+    /* Typography */
+    --vexa-font-primary: 'Orbitron', 'Space Grotesk', sans-serif;
+    --vexa-font-secondary: 'Rajdhani', 'Inter', sans-serif;
+    --vexa-font-body: 'Exo 2', 'Segoe UI', sans-serif;
+    
+    /* Border Radius */
+    --vexa-radius-sm: 8px;
+    --vexa-radius-md: 14px;
+    --vexa-radius-lg: 20px;
+    --vexa-radius-xl: 28px;
+    --vexa-radius-full: 9999px;
+}
+
+/* VEXA Logo Styles */
+.vexa-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--vexa-font-primary);
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    position: relative;
+}
+
+.vexa-logo-icon {
+    width: 48px;
+    height: 48px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vexa-logo-icon::before {
+    content: 'V';
+    position: absolute;
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--vexa-primary), var(--vexa-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: logoPulse 2s ease-in-out infinite;
+}
+
+.vexa-logo-icon::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--vexa-primary);
+    border-radius: 50%;
+    border-top-color: var(--vexa-secondary);
+    border-bottom-color: var(--vexa-accent);
+    animation: logoSpin 4s linear infinite;
+}
+
+.vexa-logo-text {
+    background: linear-gradient(135deg, #FFFFFF, var(--vexa-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.3));
+}
+
+@keyframes logoSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes logoPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* VEXA Typography */
+.vexa-title {
+    font-family: var(--vexa-font-primary);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.vexa-heading {
+    font-family: var(--vexa-font-secondary);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.vexa-body {
+    font-family: var(--vexa-font-body);
+    font-weight: 400;
+}
+
+/* VEXA Buttons */
+.vexa-btn {
+    position: relative;
+    overflow: hidden;
+    font-family: var(--vexa-font-secondary);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.vexa-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.vexa-btn:hover::before {
+    left: 100%;
+}
+
+.vexa-btn-primary {
+    background: linear-gradient(135deg, var(--vexa-primary), var(--vexa-secondary));
+    color: white;
+    border: none;
+    box-shadow: var(--vexa-glow-primary);
+}
+
+.vexa-btn-primary:hover {
+    box-shadow: 0 0 30px rgba(108, 60, 225, 0.7);
+    transform: translateY(-2px);
+}
+
+/* VEXA Cards */
+.vexa-card {
+    background: var(--vexa-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--vexa-glass-border);
+    border-radius: var(--vexa-radius-lg);
+    transition: all 0.3s ease;
+}
+
+.vexa-card:hover {
+    border-color: rgba(108, 60, 225, 0.5);
+    box-shadow: var(--vexa-glow-primary);
+    transform: translateY(-2px);
+}
+
+/* VEXA Background Pattern */
+.vexa-bg-pattern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(108, 60, 225, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 51, 102, 0.05) 0%, transparent 50%);
+}
+
+/* VEXA Navigation */
+.vexa-nav {
+    background: rgba(5, 5, 8, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(108, 60, 225, 0.3);
+}
+
+.vexa-nav-item {
+    color: #666;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.vexa-nav-item.active {
+    color: var(--vexa-secondary);
+}
+
+.vexa-nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--vexa-primary), var(--vexa-secondary));
+    border-radius: 2px;
+}
