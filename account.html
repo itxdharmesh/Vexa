@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Account</title>
+    <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/vexa-brand.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .account-container {
+            padding: 20px 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .account-card {
+            background: var(--vexa-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--vexa-glass-border);
+            border-radius: var(--vexa-radius-xl);
+            padding: 24px;
+            margin: 16px 0;
+        }
+        
+        .account-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid var(--vexa-glass-border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        
+        .account-section:last-child {
+            border-bottom: none;
+        }
+        
+        .account-section:hover {
+            background: var(--vexa-glass);
+            border-radius: var(--vexa-radius-md);
+        }
+        
+        .account-icon {
+            font-size: 24px;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .account-info {
+            flex: 1;
+        }
+        
+        .account-title {
+            font-weight: 600;
+            font-family: var(--vexa-font-secondary);
+            font-size: 16px;
+        }
+        
+        .account-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .account-arrow {
+            color: var(--text-muted);
+            font-size: 20px;
+        }
+        
+        .logout-btn {
+            width: 100%;
+            padding: 16px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            border-radius: var(--vexa-radius-md);
+            color: #ef4444;
+            font-family: var(--vexa-font-secondary);
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+        
+        .user-summary {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: var(--vexa-glass);
+            border: 1px solid var(--vexa-glass-border);
+            border-radius: var(--vexa-radius-lg);
+            margin-bottom: 16px;
+        }
+        
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--vexa-primary), var(--vexa-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            font-family: var(--vexa-font-primary);
+        }
+        
+        .user-details {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 700;
+            font-family: var(--vexa-font-secondary);
+            font-size: 18px;
+        }
+        
+        .user-email {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .verified-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            border-radius: 10px;
+            color: #10b981;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="vexa-bg-pattern"></div>
+    
+    <div class="container account-container">
+        <header class="account-header">
+            <a href="home.html" class="vexa-logo">
+                <div class="vexa-logo-icon"></div>
+            </a>
+            <h1 class="vexa-title" style="font-size: 24px;">👤 Account</h1>
+        </header>
+        
+        <!-- User Summary -->
+        <div class="user-summary">
+            <div class="user-avatar" id="user-avatar">V</div>
+            <div class="user-details">
+                <div class="user-name">
+                    <span id="user-name">Display Name</span>
+                    <span class="verified-badge" id="verified-badge" style="display: none;">✓ Verified</span>
+                </div>
+                <div class="user-email" id="user-email">email@example.com</div>
+                <div class="user-email" id="user-username">@username</div>
+            </div>
+        </div>
+        
+        <!-- Account Sections -->
+        <div class="account-card">
+            <a href="profile.html" class="account-section">
+                <div class="account-icon">👤</div>
+                <div class="account-info">
+                    <div class="account-title">My Profile</div>
+                    <div class="account-subtitle">View your profile and achievements</div>
+                </div>
+                <div class="account-arrow">›</div>
+            </a>
+            
+            <a href="settings.html" class="account-section">
+                <div class="account-icon">⚙️</div>
+                <div class="account-info">
+                    <div class="account-title">Settings</div>
+                    <div class="account-subtitle">Theme, sound, notifications</div>
+                </div>
+                <div class="account-arrow">›</div>
+            </a>
+            
+            <div class="account-section" onclick="showComingSoon()">
+                <div class="account-icon">🪙</div>
+                <div class="account-info">
+                    <div class="account-title">Coin Balance</div>
+                    <div class="account-subtitle" id="coin-balance">0 Coins</div>
+                </div>
+                <div class="account-arrow">›</div>
+            </div>
+            
+            <div class="account-section" onclick="showComingSoon()">
+                <div class="account-icon">⭐</div>
+                <div class="account-info">
+                    <div class="account-title">XP & Level</div>
+                    <div class="account-subtitle" id="xp-level">Level 1 • 0 XP</div>
+                </div>
+                <div class="account-arrow">›</div>
+            </div>
+            
+            <div class="account-section" onclick="showComingSoon()">
+                <div class="account-icon">🔥</div>
+                <div class="account-info">
+                    <div class="account-title">Daily Streak</div>
+                    <div class="account-subtitle" id="streak-info">0 Day Streak</div>
+                </div>
+                <div class="account-arrow">›</div>
+            </div>
+            
+            <div class="account-section" onclick="showComingSoon()">
+                <div class="account-icon">🏆</div>
+                <div class="account-info">
+                    <div class="account-title">Achievements</div>
+                    <div class="account-subtitle" id="achievement-info">0 Unlocked</div>
+                </div>
+                <div class="account-arrow">›</div>
+            </div>
+            
+            <div class="account-section" onclick="showComingSoon()">
+                <div class="account-icon">🎮</div>
+                <div class="account-info">
+                    <div class="account-title">Game Statistics</div>
+                    <div class="account-subtitle">View your gaming stats</div>
+                </div>
+                <div class="account-arrow">›</div>
+            </div>
+        </div>
+        
+        <!-- Logout Button -->
+        <button class="logout-btn" onclick="logout()">🚪 LOGOUT</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav vexa-nav">
+        <a href="home.html" class="nav-item vexa-nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="games.html" class="nav-item vexa-nav-item">
+            <span class="nav-icon">🎮</span>
+            <span>Games</span>
+        </a>
+        <a href="chat.html" class="nav-item vexa-nav-item">
+            <span class="nav-icon">💬</span>
+            <span>Chat</span>
+        </a>
+        <a href="account.html" class="nav-item vexa-nav-item active">
+            <span class="nav-icon">👤</span>
+            <span>Account</span>
+        </a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        authManager.init();
+        
+        authManager.onAuthStateChange(async (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            loadUserData(user);
+        });
+        
+        async function loadUserData(user) {
+            const userSnapshot = await database.ref(`users/${user.uid}`).once('value');
+            const userData = userSnapshot.val();
+            
+            const progressSnapshot = await database.ref(`usersProgress/${user.uid}`).once('value');
+            const progressData = progressSnapshot.val();
+            
+            const streakSnapshot = await database.ref(`streaks/${user.uid}`).once('value');
+            const streakData = streakSnapshot.val();
+            
+            const achievementsSnapshot = await database.ref(`achievements/${user.uid}`).once('value');
+            const achievements = achievementsSnapshot.val() || {};
+            const unlockedCount = Object.values(achievements).filter(a => a.progress >= 1).length;
+            
+            const levelInfo = ChronoUtils.calculateLevel(progressData.totalXP);
+            
+            document.getElementById('user-avatar').textContent = userData.displayName ? userData.displayName[0].toUpperCase() : 'V';
+            document.getElementById('user-avatar').style.background = userData.avatarColor || 'linear-gradient(135deg, #6C3CE1, #00D4FF)';
+            document.getElementById('user-name').textContent = userData.displayName;
+            document.getElementById('user-email').textContent = userData.email;
+            document.getElementById('user-username').textContent = `@${userData.username}`;
+            
+            if (user.emailVerified) {
+                document.getElementById('verified-badge').style.display = 'inline-block';
+            }
+            
+            document.getElementById('coin-balance').textContent = `${ChronoUtils.formatNumber(progressData.coins)} Coins`;
+            document.getElementById('xp-level').textContent = `Level ${levelInfo.level} • ${ChronoUtils.formatNumber(progressData.totalXP)} XP`;
+            document.getElementById('streak-info').textContent = `${streakData.currentStreak} Day Streak`;
+            document.getElementById('achievement-info').textContent = `${unlockedCount} Unlocked`;
+        }
+        
+        function showComingSoon() {
+            ChronoUtils.showToast('Coming soon!', 'info');
+        }
+        
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                await authManager.logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
