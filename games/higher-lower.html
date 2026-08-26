@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Higher or Lower</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo/vexa-icon.svg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/vexa-brand.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <style>
+        .game-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background: var(--vexa-glass);
+            border: 1px solid var(--vexa-glass-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: var(--vexa-radius-md);
+            cursor: pointer;
+            text-decoration: none;
+            font-family: var(--vexa-font-secondary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .card-display {
+            width: 200px;
+            height: 280px;
+            margin: 40px auto;
+            background: var(--vexa-glass);
+            border: 2px solid var(--vexa-primary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 40px rgba(108, 60, 225, 0.3);
+            animation: cardAppear 0.5s ease;
+        }
+        
+        @keyframes cardAppear {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .choice-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 24px 0;
+        }
+        
+        .choice-btn {
+            padding: 16px 24px;
+            border: none;
+            border-radius: var(--vexa-radius-md);
+            font-family: var(--vexa-font-secondary);
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            min-width: 120px;
+        }
+        
+        .higher-btn {
+            background: linear-gradient(135deg, #10b981, #00D4FF);
+            color: white;
+        }
+        
+        .lower-btn {
+            background: linear-gradient(135deg, #ef4444, #FF3366);
+            color: white;
+        }
+        
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        
+        .result-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 16px 0;
+            min-height: 36px;
+        }
+        
+        .score-display {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--vexa-secondary);
+            font-family: var(--vexa-font-primary);
+            margin: 16px 0;
+        }
+        
+        .game-stats {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 24px 0;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .stat-box {
+            background: var(--vexa-glass);
+            border: 1px solid var(--vexa-glass-border);
+            border-radius: var(--vexa-radius-md);
+            padding: 12px;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--vexa-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="vexa-bg-pattern"></div>
+    
+    <div class="game-container">
+        <div class="game-header">
+            <a href="../games.html" class="back-btn">← Back</a>
+            <h1 class="vexa-title" style="font-size: 24px;">📊 Higher or Lower</h1>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-box">
+                <div class="stat-label">Score</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Best</div>
+                <div class="stat-value" id="best">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Coins</div>
+                <div class="stat-value" id="coins">0</div>
+            </div>
+        </div>
+        
+        <div class="card-display" id="current-card">?</div>
+        
+        <div class="score-display" id="streak-display">Streak: 0</div>
+        
+        <div class="choice-buttons">
+            <button class="choice-btn higher-btn" onclick="guess('higher')">HIGHER</button>
+            <button class="choice-btn lower-btn" onclick="guess('lower')">LOWER</button>
+        </div>
+        
+        <div class="result-text" id="result"></div>
+        
+        <button class="btn btn-primary" onclick="newGame()" style="margin-top: 16px;">NEW GAME</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        let currentUser = null;
+        let currentNumber = null;
+        let score = 0;
+        let bestScore = 0;
+        let streak = 0;
+        let coins = 0;
+        let gameActive = false;
+        
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = '../login.html';
+                return;
+            }
+            currentUser = user;
+            await loadUserData();
+            newGame();
+        });
+        
+        async function loadUserData() {
+            const snapshot = await database.ref(`usersProgress/${currentUser.uid}`).once('value');
+            const data = snapshot.val();
+            coins = data.coins;
+            document.getElementById('coins').textContent = coins;
+            
+            const statsRef = await database.ref(`gameStats/${currentUser.uid}/higher_lower`).once('value');
+            const stats = statsRef.val();
+            if (stats) {
+                bestScore = stats.highScore || 0;
+                document.getElementById('best').textContent = bestScore;
+            }
+        }
+        
+        function newGame() {
+            currentNumber = Math.floor(Math.random() * 100) + 1;
+            document.getElementById('current-card').textContent = currentNumber;
+            gameActive = true;
+            score = 0;
+            streak = 0;
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak-display').textContent = 'Streak: 0';
+            document.getElementById('result').textContent = '';
+            document.getElementById('result').style.color = '';
+        }
+        
+        function guess(choice) {
+            if (!gameActive) return;
+            
+            const nextNumber = Math.floor(Math.random() * 100) + 1;
+            const isHigher = nextNumber > currentNumber;
+            const isLower = nextNumber < currentNumber;
+            const isSame = nextNumber === currentNumber;
+            
+            let correct = false;
+            
+            if (isSame) {
+                document.getElementById('result').textContent = `Same number! ${nextNumber}`;
+                document.getElementById('result').style.color = '#f59e0b';
+                gameActive = false;
+                endGame();
+                return;
+            } else if (choice === 'higher' && isHigher) {
+                correct = true;
+            } else if (choice === 'lower' && isLower) {
+                correct = true;
+            }
+            
+            if (correct) {
+                streak++;
+                score += 10 * streak;
+                document.getElementById('result').textContent = `✓ Correct! ${nextNumber} was ${choice}! +${10 * streak} points`;
+                document.getElementById('result').style.color = '#10b981';
+            } else {
+                document.getElementById('result').textContent = `✗ Wrong! ${nextNumber} was ${isHigher ? 'higher' : 'lower'}!`;
+                document.getElementById('result').style.color = '#ef4444';
+                gameActive = false;
+                endGame();
+                return;
+            }
+            
+            currentNumber = nextNumber;
+            document.getElementById('current-card').textContent = currentNumber;
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak-display').textContent = `Streak: ${streak}`;
+            
+            if (score > bestScore) {
+                bestScore = score;
+                document.getElementById('best').textContent = bestScore;
+            }
+        }
+        
+        async function endGame() {
+            const earnedCoins = Math.floor(score / 10);
+            coins += earnedCoins;
+            document.getElementById('coins').textContent = coins;
+            
+            await database.ref(`usersProgress/${currentUser.uid}`).update({
+                coins: coins
+            });
+            
+            const statsRef = database.ref(`gameStats/${currentUser.uid}/higher_lower`);
+            const statsSnapshot = await statsRef.once('value');
+            const stats = statsSnapshot.val() || { gamesPlayed: 0, highScore: 0 };
+            
+            await statsRef.update({
+                gamesPlayed: stats.gamesPlayed + 1,
+                highScore: Math.max(stats.highScore, bestScore)
+            });
+            
+            if (score > 0) {
+                await awardXP(Math.floor(score / 20));
+            }
+            
+            setTimeout(() => {
+                newGame();
+            }, 2000);
+        }
+        
+        async function awardXP(xpAmount) {
+            const progressRef = database.ref(`usersProgress/${currentUser.uid}`);
+            const snapshot = await progressRef.once('value');
+            const data = snapshot.val();
+            await progressRef.update({
+                totalXP: data.totalXP + xpAmount
+            });
+        }
+    </script>
+</body>
+</html>2
