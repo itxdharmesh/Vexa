@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Lucky Number</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo/vexa-icon.svg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/vexa-brand.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <style>
+        .game-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background: var(--vexa-glass);
+            border: 1px solid var(--vexa-glass-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: var(--vexa-radius-md);
+            cursor: pointer;
+            text-decoration: none;
+            font-family: var(--vexa-font-secondary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .number-display {
+            width: 200px;
+            height: 200px;
+            margin: 40px auto;
+            background: var(--vexa-glass);
+            border: 2px solid var(--vexa-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            font-weight: bold;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.3);
+            animation: numberAppear 0.5s ease;
+        }
+        
+        @keyframes numberAppear {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .number-btn {
+            padding: 12px;
+            background: var(--vexa-glass);
+            border: 1px solid var(--vexa-glass-border);
+            border-radius: var(--vexa-radius-sm);
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--vexa-font-secondary);
+        }
+        
+        .number-btn:hover {
+            border-color: var(--vexa-gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .result-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 16px 0;
+            min-height: 36px;
+        }
+        
+        .game-stats {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 24px 0;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .stat-box {
+            background: var(--vexa-glass);
+            border: 1px solid var(--vexa-glass-border);
+            border-radius: var(--vexa-radius-md);
+            padding: 12px;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--vexa-gold);
+        }
+    </style>
+</head>
+<body>
+    <div class="vexa-bg-pattern"></div>
+    
+    <div class="game-container">
+        <div class="game-header">
+            <a href="../games.html" class="back-btn">← Back</a>
+            <h1 class="vexa-title" style="font-size: 24px;">🔢 Lucky Number</h1>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-box">
+                <div class="stat-label">Coins</div>
+                <div class="stat-value" id="coins">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Wins</div>
+                <div class="stat-value" id="wins">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Attempts</div>
+                <div class="stat-value" id="attempts">0</div>
+            </div>
+        </div>
+        
+        <div class="number-display" id="lucky-number">?</div>
+        
+        <p style="color: var(--text-muted); margin-bottom: 8px;">Choose your lucky number (1-20)</p>
+        
+        <div class="number-grid" id="number-grid"></div>
+        
+        <div class="result-text" id="result"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        let currentUser = null;
+        let coins = 0;
+        let wins = 0;
+        let attempts = 0;
+        let isPlaying = false;
+        
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = '../login.html';
+                return;
+            }
+            currentUser = user;
+            await loadUserData();
+            createNumberGrid();
+        });
+        
+        async function loadUserData() {
+            const snapshot = await database.ref(`usersProgress/${currentUser.uid}`).once('value');
+            const data = snapshot.val();
+            coins = data.coins;
+            document.getElementById('coins').textContent = coins;
+        }
+        
+        function createNumberGrid() {
+            const grid = document.getElementById('number-grid');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= 20; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'number-btn';
+                btn.textContent = i;
+                btn.onclick = () => pickNumber(i);
+                grid.appendChild(btn);
+            }
+        }
+        
+        async function pickNumber(chosenNumber) {
+            if (isPlaying) return;
+            if (coins < 20) {
+                ChronoUtils.showToast('Need 20 coins to play!', 'error');
+                return;
+            }
+            
+            isPlaying = true;
+            coins -= 20;
+            attempts++;
+            document.getElementById('coins').textContent = coins;
+            document.getElementById('attempts').textContent = attempts;
+            
+            const luckyNumber = Math.floor(Math.random() * 20) + 1;
+            const display = document.getElementById('lucky-number');
+            
+            // Animation
+            let count = 0;
+            const animationInterval = setInterval(() => {
+                display.textContent = Math.floor(Math.random() * 20) + 1;
+                count++;
+                
+                if (count > 20) {
+                    clearInterval(animationInterval);
+                    display.textContent = luckyNumber;
+                    
+                    if (chosenNumber === luckyNumber) {
+                        const reward = 100;
+                        coins += reward;
+                        wins++;
+                        document.getElementById('result').textContent = `🎉 JACKPOT! You won ${reward} coins!`;
+                        document.getElementById('result').style.color = '#10b981';
+                    } else {
+                        document.getElementById('result').textContent = `😢 Not this time! Lucky number was ${luckyNumber}`;
+                        document.getElementById('result').style.color = '#ef4444';
+                    }
+                    
+                    document.getElementById('coins').textContent = coins;
+                    document.getElementById('wins').textContent = wins;
+                    
+                    updateDatabase();
+                    isPlaying = false;
+                }
+            }, 100);
+        }
+        
+        async function updateDatabase() {
+            await database.ref(`usersProgress/${currentUser.uid}`).update({
+                coins: coins
+            });
+            
+            const statsRef = database.ref(`gameStats/${currentUser.uid}/lucky_number`);
+            const statsSnapshot = await statsRef.once('value');
+            const stats = statsSnapshot.val() || { gamesPlayed: 0, highScore: 0 };
+            
+            await statsRef.update({
+                gamesPlayed: stats.gamesPlayed + 1,
+                highScore: Math.max(stats.highScore, wins)
+            });
+            
+            if (wins > 0) {
+                await awardXP(10);
+            }
+        }
+        
+        async function awardXP(xpAmount) {
+            const progressRef = database.ref(`usersProgress/${currentUser.uid}`);
+            const snapshot = await progressRef.once('value');
+            const data = snapshot.val();
+            await progressRef.update({
+                totalXP: data.totalXP + xpAmount
+            });
+        }
+    </script>
+</body>
+</html>
