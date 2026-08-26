@@ -1,0 +1,82 @@
+[
+    {
+        "id": "coin_flip",
+        "name": "Coin Flip",
+        "description": "Test your virtual luck. Guess heads or tails!",
+        "category": "Luck",
+        "icon": "🪙",
+        "rewards": {"coins": 10, "xp": 5}
+    },
+    {
+        "id": "dice",
+        "name": "Dice Roll",
+        "description": "Roll the virtual dice and win rewards!",
+        "category": "Luck",
+        "icon": "🎲",
+        "rewards": {"coins": 15, "xp": 8}
+    },
+    {
+        "id": "higher_lower",
+        "name": "Higher or Lower",
+        "description": "Guess if the next number is higher or lower!",
+        "category": "Luck",
+        "icon": "📊",
+        "rewards": {"coins": 12, "xp": 6}
+    },
+    {
+        "id": "lucky_number",
+        "name": "Lucky Number",
+        "description": "Choose your lucky number and win!",
+        "category": "Luck",
+        "icon": "🔢",
+        "rewards": {"coins": 20, "xp": 10}
+    },
+    {
+        "id": "mystery_box",
+        "name": "Mystery Box",
+        "description": "Open the mystery box for surprise rewards!",
+        "category": "Luck",
+        "icon": "📦",
+        "rewards": {"coins": 25, "xp": 12}
+    },
+    {
+        "id": "memory",
+        "name": "Memory Match",
+        "description": "Test your memory by matching cards!",
+        "category": "Brain",
+        "icon": "🧠",
+        "rewards": {"coins": 15, "xp": 10}
+    },
+    {
+        "id": "reaction",
+        "name": "Reaction Time",
+        "description": "Test your reaction speed!",
+        "category": "Reaction",
+        "icon": "⚡",
+        "rewards": {"coins": 10, "xp": 8}
+    },
+    {
+        "id": "number_rush",
+        "name": "Number Rush",
+        "description": "Solve math problems quickly!",
+        "category": "Brain",
+        "icon": "🔢",
+        "rewards": {"coins": 15, "xp": 10}
+    },
+    {
+        "id": "pattern",
+        "name": "Pattern Match",
+        "description": "Find the missing pattern!",
+        "category": "Puzzle",
+        "icon": "🧩",
+        "rewards": {"coins": 12, "xp": 8}
+    },
+    {
+        "id": "football_challenge",
+        "name": "Football Challenge",
+        "description": "Score goals in this football challenge!",
+        "category": "Sports",
+        "icon": "⚽",
+        "rewards": {"coins": 20, "xp": 15}
+    }
+]
