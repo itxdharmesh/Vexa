@@ -1,4 +1,4 @@
-// Authentication handling for VEXA
+// Updated Authentication handling for VEXA
 
 class AuthManager {
     constructor() {
@@ -21,8 +21,44 @@ class AuthManager {
         this.authStateListeners.push(callback);
     }
 
+    // Username validation function
+    validateUsername(username) {
+        // Check if username is empty
+        if (!username || username.length < 3) {
+            throw new Error('Username must be at least 3 characters long');
+        }
+        
+        // Check if username is too long
+        if (username.length > 20) {
+            throw new Error('Username must be less than 20 characters');
+        }
+        
+        // Check if username contains only allowed characters
+        const usernameRegex = /^[a-zA-Z0-9._]+$/;
+        if (!usernameRegex.test(username)) {
+            throw new Error('Username can only contain letters, numbers, dots, and underscores');
+        }
+        
+        // Check if username starts or ends with dot/underscore
+        if (username.startsWith('.') || username.startsWith('_') || 
+            username.endsWith('.') || username.endsWith('_')) {
+            throw new Error('Username cannot start or end with dot or underscore');
+        }
+        
+        // Check for consecutive dots/underscores
+        if (username.includes('..') || username.includes('__') || 
+            username.includes('._') || username.includes('_.')) {
+            throw new Error('Username cannot have consecutive dots or underscores');
+        }
+        
+        return true;
+    }
+
     async signUp(username, displayName, email, password) {
         try {
+            // Validate username
+            this.validateUsername(username);
+            
             // Check username uniqueness
             const usernameRef = database.ref(`usernames/${username.toLowerCase()}`);
             const snapshot = await usernameRef.once('value');
@@ -35,14 +71,18 @@ class AuthManager {
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
             
+            // Send email verification
+            await user.sendEmailVerification();
+            
             // Update display name
             await user.updateProfile({ displayName });
             
             // Store user data
             await database.ref(`users/${user.uid}`).set({
-                username,
+                username: username.toLowerCase(),
                 displayName,
                 email,
+                emailVerified: false,
                 createdAt: Date.now(),
                 avatarColor: this.generateAvatarColor()
             });
@@ -54,7 +94,7 @@ class AuthManager {
             await database.ref(`usersProgress/${user.uid}`).set({
                 totalXP: 0,
                 level: 1,
-                coins: 100, // Starting bonus
+                coins: 100,
                 createdAt: Date.now()
             });
             
@@ -75,7 +115,14 @@ class AuthManager {
     async login(email, password) {
         try {
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
-            return userCredential.user;
+            const user = userCredential.user;
+            
+            // Check if email is verified
+            if (!user.emailVerified) {
+                throw new Error('Please verify your email before logging in');
+            }
+            
+            return user;
         } catch (error) {
             console.error('Login error:', error);
             throw this.handleAuthError(error);
@@ -97,6 +144,7 @@ class AuthManager {
                     username,
                     displayName: user.displayName,
                     email: user.email,
+                    emailVerified: true,
                     createdAt: Date.now(),
                     avatarColor: this.generateAvatarColor()
                 });
@@ -120,6 +168,19 @@ class AuthManager {
         } catch (error) {
             console.error('Google login error:', error);
             throw this.handleAuthError(error);
+        }
+    }
+
+    async resendVerificationEmail() {
+        try {
+            if (this.currentUser) {
+                await this.currentUser.sendEmailVerification();
+                return true;
+            }
+            throw new Error('No user logged in');
+        } catch (error) {
+            console.error('Resend verification error:', error);
+            throw error;
         }
     }
 
@@ -179,7 +240,7 @@ class AuthManager {
     }
 
     generateUsernameFromEmail(email) {
-        const base = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+        const base = email.split('@')[0].replace(/[^a-zA-Z0-9._]/g, '');
         return base + Math.floor(Math.random() * 1000);
     }
 
@@ -197,7 +258,7 @@ class AuthManager {
             'auth/popup-closed-by-user': 'Sign-in popup was closed'
         };
         
-        return new Error(errorMessages[error.code] || 'Authentication failed. Please try again.');
+        return new Error(errorMessages[error.code] || error.message || 'Authentication failed. Please try again.');
     }
 
     requireAuth() {
