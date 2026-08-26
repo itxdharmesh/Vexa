@@ -1,0 +1,116 @@
+{
+    "rules": {
+        "users": {
+            "$userId": {
+                ".read": "auth != null",
+                ".write": "auth.uid === $userId",
+                ".validate": "newData.hasChildren(['username', 'displayName', 'email', 'createdAt'])",
+                "username": {
+                    ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 20 && newData.val().matches(/^[a-zA-Z0-9._]+$/)"
+                },
+                "displayName": {
+                    ".validate": "newData.isString() && newData.val().length >= 1"
+                }
+            }
+        },
+        "usernames": {
+            ".read": "auth != null",
+            ".write": "auth != null",
+            "$username": {
+                ".validate": "newData.val() === auth.uid"
+            }
+        },
+        "followers": {
+            "$userId": {
+                ".read": "auth != null",
+                ".write": "auth.uid === $userId",
+                "$followerId": {
+                    ".validate": "newData.isBoolean()"
+                }
+            }
+        },
+        "following": {
+            "$userId": {
+                ".read": "auth != null",
+                ".write": "auth.uid === $userId",
+                "$followingId": {
+                    ".validate": "newData.isBoolean()"
+                }
+            }
+        },
+        "chats": {
+            "$chatId": {
+                ".read": "auth != null && data.child('participants').child(auth.uid).exists()",
+                ".write": "auth != null && data.child('participants').child(auth.uid).exists()",
+                "participants": {
+                    ".validate": "newData.hasChildren()"
+                },
+                "messages": {
+                    "$messageId": {
+                        ".validate": "newData.hasChildren(['senderId', 'text', 'createdAt', 'expiresAt']) && newData.child('senderId').val() === auth.uid && newData.child('expiresAt').val() <= now + 86400000"
+                    }
+                }
+            }
+        },
+        "presence": {
+            "$userId": {
+                ".read": "auth != null",
+                ".write": "auth.uid === $userId",
+                "online": {
+                    ".validate": "newData.isBoolean()"
+                },
+                "lastSeen": {
+                    ".validate": "newData.isNumber()"
+                }
+            }
+        },
+        "achievements": {
+            "$userId": {
+                ".read": "auth != null",
+                ".write": "auth.uid === $userId",
+                "$achievementId": {
+                    ".validate": "newData.hasChildren(['progress', 'updatedAt']) && newData.child('progress').isNumber() && newData.child('updatedAt').isNumber()"
+                }
+            }
+        },
+        "gameStats": {
+            "$userId": {
+                ".read": "auth != null",
+                ".write": "auth.uid === $userId",
+                "$gameId": {
+                    ".validate": "newData.hasChildren(['highScore', 'gamesPlayed']) && newData.child('highScore').isNumber() && newData.child('gamesPlayed').isNumber()"
+                }
+            }
+        },
+        "usersProgress": {
+            "$userId": {
+                ".read": "auth != null",
+                ".write": "auth.uid === $userId",
+                ".validate": "newData.hasChildren(['totalXP', 'level', 'coins']) && newData.child('totalXP').isNumber() && newData.child('coins').isNumber() && newData.child('level').isNumber()"
+            }
+        },
+        "streaks": {
+            "$userId": {
+                ".read": "auth != null",
+                ".write": "auth.uid === $userId",
+                ".validate": "newData.hasChildren(['currentStreak', 'bestStreak', 'lastActiveAt'])"
+            }
+        },
+        "dailyRewards": {
+            "$userId": {
+                ".read": "auth != null",
+                ".write": "auth.uid === $userId",
+                ".validate": "newData.hasChildren(['rewardDay', 'lastClaimAt'])"
+            }
+        },
+        "notifications": {
+            "$userId": {
+                ".read": "auth != null && auth.uid === $userId",
+                ".write": "auth != null && auth.uid === $userId",
+                "$notificationId": {
+                    ".validate": "newData.hasChildren(['type', 'read', 'createdAt'])"
+                }
+            }
+        }
+    }
+}
