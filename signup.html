@@ -6,204 +6,302 @@
     <title>VEXA - Sign Up</title>
     <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/vexa-brand.css">
     <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
     <style>
-        .auth-container {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: #0A0A0F;
+            color: white;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            position: relative;
         }
         
         .auth-box {
             width: 100%;
             max-width: 400px;
-            background: var(--vexa-glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-xl);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             padding: 40px;
-            animation: slideUp 0.5s ease;
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         
         .auth-logo {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 30px;
         }
         
         .auth-title {
-            font-family: var(--vexa-font-primary);
+            font-family: 'Orbitron', sans-serif;
             font-size: 32px;
-            font-weight: 700;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFFFFF, #00D4FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
         
         .auth-subtitle {
-            color: var(--text-muted);
-            font-family: var(--vexa-font-secondary);
-            margin-bottom: 32px;
+            color: #a0a0b8;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 16px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #a0a0b8;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            background: #12121a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-family: 'Exo 2', sans-serif;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #6C3CE1;
+            box-shadow: 0 0 0 3px rgba(108, 60, 225, 0.4);
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6C3CE1, #00D4FF);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(108, 60, 225, 0.5);
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: #a0a0b8;
+            font-size: 14px;
+        }
+        
+        .auth-footer a {
+            color: #00D4FF;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            color: #10b981;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+            font-size: 14px;
         }
         
         .username-hint {
-            font-size: 12px;
-            color: var(--text-muted);
+            font-size: 11px;
+            color: #6b6b80;
             margin-top: 4px;
-        }
-        
-        .password-strength {
-            height: 4px;
-            background: var(--bg-secondary);
-            border-radius: 2px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-        
-        .password-strength-bar {
-            height: 100%;
-            width: 0%;
-            transition: all 0.3s ease;
-            border-radius: 2px;
         }
     </style>
 </head>
 <body>
-    <div class="vexa-bg-pattern"></div>
-    
-    <div class="auth-container">
-        <div class="auth-box">
-            <div class="auth-logo">
-                <div class="vexa-logo" style="justify-content: center;">
-                    <div class="vexa-logo-icon"></div>
-                </div>
-                <h1 class="auth-title vexa-title">VEXA</h1>
-                <p class="auth-subtitle">Join the future of gaming</p>
+    <div class="auth-box">
+        <div class="auth-logo">
+            <h1 class="auth-title">VEXA</h1>
+            <p class="auth-subtitle">Join the future of gaming</p>
+        </div>
+        
+        <div class="error-message" id="error-message"></div>
+        <div class="success-message" id="success-message"></div>
+        
+        <form id="signup-form">
+            <div class="input-group">
+                <label class="input-label">Username</label>
+                <input type="text" class="input-field" id="username" placeholder="Choose a username" required>
+                <p class="username-hint">Only letters, numbers, dots (.) and underscores (_)</p>
             </div>
             
-            <form id="signup-form">
-                <div class="input-group">
-                    <label class="input-label">Username</label>
-                    <input type="text" class="input-field" id="username" placeholder="Choose a username" required>
-                    <p class="username-hint">Only letters, numbers, dots (.) and underscores (_) allowed</p>
-                </div>
-                
-                <div class="input-group">
-                    <label class="input-label">Display Name</label>
-                    <input type="text" class="input-field" id="displayName" placeholder="Your display name" required>
-                </div>
-                
-                <div class="input-group">
-                    <label class="input-label">Email</label>
-                    <input type="email" class="input-field" id="email" placeholder="Enter your email" required>
-                </div>
-                
-                <div class="input-group">
-                    <label class="input-label">Password</label>
-                    <input type="password" class="input-field" id="password" placeholder="Create a password" required>
-                    <div class="password-strength">
-                        <div class="password-strength-bar" id="password-strength-bar"></div>
-                    </div>
-                    <p class="username-hint" id="password-hint">Use at least 6 characters</p>
-                </div>
-                
-                <button type="submit" class="btn btn-primary vexa-btn vexa-btn-primary" style="width: 100%;">
-                    CREATE ACCOUNT
-                </button>
-            </form>
+            <div class="input-group">
+                <label class="input-label">Display Name</label>
+                <input type="text" class="input-field" id="displayName" placeholder="Your display name" required>
+            </div>
             
-            <p style="text-align: center; margin-top: 24px; color: var(--text-muted); font-size: 14px;">
-                Already have an account? 
-                <a href="login.html" style="color: var(--vexa-secondary); text-decoration: none; font-weight: 600;">Login</a>
-            </p>
+            <div class="input-group">
+                <label class="input-label">Email</label>
+                <input type="email" class="input-field" id="email" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Password</label>
+                <input type="password" class="input-field" id="password" placeholder="Create a password" required>
+            </div>
+            
+            <button type="submit" class="btn-primary">CREATE ACCOUNT</button>
+        </form>
+        
+        <div class="auth-footer">
+            Already have an account? <a href="login.html">Login</a>
         </div>
     </div>
-    
+
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="js/firebase-config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
     <script>
-        const authManager = new AuthManager();
-        authManager.init();
-        
-        // Username validation on input
-        document.getElementById('username').addEventListener('input', function(e) {
-            const username = e.target.value;
-            const usernameRegex = /^[a-zA-Z0-9._]+$/;
-            
-            if (username && !usernameRegex.test(username)) {
-                e.target.style.borderColor = 'var(--danger)';
-                e.target.setCustomValidity('Only letters, numbers, dots, and underscores allowed');
-            } else {
-                e.target.style.borderColor = '';
-                e.target.setCustomValidity('');
-            }
-        });
-        
-        // Password strength indicator
-        document.getElementById('password').addEventListener('input', function(e) {
-            const password = e.target.value;
-            const strengthBar = document.getElementById('password-strength-bar');
-            const passwordHint = document.getElementById('password-hint');
-            
-            let strength = 0;
-            
-            if (password.length >= 6) strength++;
-            if (password.length >= 10) strength++;
-            if (/[A-Z]/.test(password)) strength++;
-            if (/[0-9]/.test(password)) strength++;
-            if (/[^A-Za-z0-9]/.test(password)) strength++;
-            
-            const colors = ['#ef4444', '#f59e0b', '#10b981', '#00D4FF', '#6C3CE1'];
-            const hints = ['Very weak', 'Weak', 'Fair', 'Good', 'Strong'];
-            
-            strengthBar.style.width = `${(strength / 5) * 100}%`;
-            strengthBar.style.background = colors[strength - 1] || '#ef4444';
-            
-            if (password.length === 0) {
-                passwordHint.textContent = 'Use at least 6 characters';
-            } else if (strength <= 2) {
-                passwordHint.textContent = `${hints[strength - 1]} - Add more characters`;
-            } else {
-                passwordHint.textContent = hints[strength - 1];
+        // Check if already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log('Already logged in, redirecting to home...');
+                window.location.replace('home.html');
             }
         });
         
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
-            const displayName = document.getElementById('displayName').value;
+            const username = document.getElementById('username').value.trim();
+            const displayName = document.getElementById('displayName').value.trim();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            
+            // Hide messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Validate username
+            const usernameRegex = /^[a-zA-Z0-9._]+$/;
+            if (!usernameRegex.test(username)) {
+                errorMessage.textContent = 'Username can only contain letters, numbers, dots, and underscores';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            if (username.length < 3) {
+                errorMessage.textContent = 'Username must be at least 3 characters';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
             try {
-                const user = await authManager.signUp(username, displayName, email, password);
-                ChronoUtils.showToast('Account created! Please verify your email. 📧', 'success');
+                console.log('Creating account...');
                 
-                // Show verification message
+                // Check username uniqueness
+                const usernameSnapshot = await database.ref(`usernames/${username.toLowerCase()}`).once('value');
+                
+                if (usernameSnapshot.exists()) {
+                    errorMessage.textContent = 'Username already taken';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                // Create user
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                console.log('Account created:', user.uid);
+                
+                // Save user data
+                await database.ref(`users/${user.uid}`).set({
+                    username: username.toLowerCase(),
+                    displayName: displayName,
+                    email: email,
+                    createdAt: Date.now(),
+                    avatarColor: 'linear-gradient(135deg, #6C3CE1, #00D4FF)'
+                });
+                
+                // Reserve username
+                await database.ref(`usernames/${username.toLowerCase()}`).set(user.uid);
+                
+                // Initialize progress
+                await database.ref(`usersProgress/${user.uid}`).set({
+                    totalXP: 0,
+                    level: 1,
+                    coins: 100,
+                    createdAt: Date.now()
+                });
+                
+                // Initialize streak
+                await database.ref(`streaks/${user.uid}`).set({
+                    currentStreak: 1,
+                    bestStreak: 1,
+                    lastActiveAt: Date.now()
+                });
+                
+                console.log('User data saved successfully');
+                
+                // Show success message
+                successMessage.textContent = 'Account created! Redirecting...';
+                successMessage.style.display = 'block';
+                
+                // Redirect to home
                 setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
+                    window.location.replace('home.html');
+                }, 500);
+                
             } catch (error) {
-                ChronoUtils.showToast(error.message, 'error');
+                console.error('Signup error:', error);
+                
+                const errorMessages = {
+                    'auth/email-already-in-use': 'Email already registered',
+                    'auth/invalid-email': 'Invalid email',
+                    'auth/weak-password': 'Password is too weak',
+                    'auth/network-request-failed': 'Network error'
+                };
+                
+                errorMessage.textContent = errorMessages[error.code] || error.message || 'Signup failed';
+                errorMessage.style.display = 'block';
             }
         });
     </script>
