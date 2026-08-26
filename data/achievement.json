@@ -1,0 +1,66 @@
+[
+    {
+        "id": "first_game",
+        "name": "First Game",
+        "description": "Play your first game",
+        "target": 1,
+        "rewardXP": 50,
+        "icon": "🎮"
+    },
+    {
+        "id": "coin_collector",
+        "name": "Coin Collector",
+        "description": "Earn 1,000 coins",
+        "target": 1000,
+        "rewardXP": 100,
+        "icon": "🪙"
+    },
+    {
+        "id": "brain_starter",
+        "name": "Brain Starter",
+        "description": "Complete 10 brain games",
+        "target": 10,
+        "rewardXP": 75,
+        "icon": "🧠"
+    },
+    {
+        "id": "streak_master",
+        "name": "Streak Master",
+        "description": "Reach a 7-day streak",
+        "target": 7,
+        "rewardXP": 150,
+        "icon": "🔥"
+    },
+    {
+        "id": "high_scorer",
+        "name": "High Scorer",
+        "description": "Set your first high score",
+        "target": 1,
+        "rewardXP": 50,
+        "icon": "🏆"
+    },
+    {
+        "id": "perfect_round",
+        "name": "Perfect Round",
+        "description": "Complete a game without mistakes",
+        "target": 1,
+        "rewardXP": 100,
+        "icon": "🎯"
+    },
+    {
+        "id": "game_master",
+        "name": "Game Master",
+        "description": "Play 100 games",
+        "target": 100,
+        "rewardXP": 200,
+        "icon": "👑"
+    },
+    {
+        "id": "coin_master",
+        "name": "Coin Master",
+        "description": "Earn 10,000 coins",
+        "target": 10000,
+        "rewardXP": 300,
+        "icon": "💰"
+    }
+]
