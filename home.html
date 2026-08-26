@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Home</title>
+    <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/vexa-brand.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div class="vexa-bg-pattern"></div>
+    
+    <div class="container">
+        <!-- VEXA Header -->
+        <header style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0;">
+            <a href="home.html" class="vexa-logo">
+                <div class="vexa-logo-icon"></div>
+            </a>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button class="btn btn-secondary" onclick="openNotifications()">🔔</button>
+                <a href="profile.html" class="avatar" id="user-avatar">V</a>
+            </div>
+        </header>
+        
+        <!-- Welcome Section -->
+        <div id="welcome-section" class="fade-in">
+            <h1 class="vexa-title" id="welcome-text" style="font-size: 24px;">Welcome back, @username 👋</h1>
+            <p id="level-info" class="vexa-heading" style="color: var(--text-muted);">Level 1 • 🔥 0 day streak</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0;">
+            <div class="stat-card vexa-card" style="text-align: center; padding: 16px;">
+                <div class="stat-icon" style="font-size: 28px;">🪙</div>
+                <div class="stat-value vexa-title" id="coin-balance" style="font-size: 24px; font-weight: 700;">0</div>
+                <div class="stat-label" style="font-size: 12px; color: var(--text-muted);">Coins</div>
+            </div>
+            <div class="stat-card vexa-card" style="text-align: center; padding: 16px;">
+                <div class="stat-icon" style="font-size: 28px;">⭐</div>
+                <div class="stat-value vexa-title" id="xp-balance" style="font-size: 24px; font-weight: 700;">0</div>
+                <div class="stat-label" style="font-size: 12px; color: var(--text-muted);">XP</div>
+            </div>
+            <div class="stat-card vexa-card" style="text-align: center; padding: 16px;">
+                <div class="stat-icon" style="font-size: 28px;">🔥</div>
+                <div class="stat-value vexa-title" id="streak-count" style="font-size: 24px; font-weight: 700;">0</div>
+                <div class="stat-label" style="font-size: 12px; color: var(--text-muted);">Day Streak</div>
+            </div>
+            <div class="stat-card vexa-card" style="text-align: center; padding: 16px;">
+                <div class="stat-icon" style="font-size: 28px;">🏆</div>
+                <div class="stat-value vexa-title" id="achievement-count" style="font-size: 24px; font-weight: 700;">0</div>
+                <div class="stat-label" style="font-size: 12px; color: var(--text-muted);">Achievements</div>
+            </div>
+        </div>
+
+        <!-- XP Progress -->
+        <div class="card vexa-card">
+            <h3 class="vexa-heading">Level Progress</h3>
+            <div class="xp-bar" style="background: var(--bg-secondary); border-radius: 9999px; height: 8px; overflow: hidden; margin: 8px 0;">
+                <div class="xp-progress" id="xp-progress" style="height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue)); width: 0%; transition: width 0.5s ease;"></div>
+            </div>
+            <p id="xp-progress-text" style="font-size: 12px; color: var(--text-muted);">0 / 100 XP</p>
+        </div>
+
+        <!-- Daily Reward -->
+        <div class="card vexa-card" id="daily-reward-card">
+            <h3 class="vexa-heading">🎁 Daily Reward</h3>
+            <div id="daily-reward-content">
+                <p id="daily-reward-info">Day 1</p>
+                <p id="daily-reward-amount" class="vexa-title" style="font-size: 24px;">+100 🪙</p>
+                <button class="btn btn-primary vexa-btn vexa-btn-primary" id="claim-reward-btn" onclick="claimDailyReward()">
+                    CLAIM
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card vexa-card">
+            <h3 class="vexa-heading">Quick Actions</h3>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;">
+                <a href="games.html" class="btn btn-primary vexa-btn vexa-btn-primary">🎮 Play Games</a>
+                <a href="chat.html" class="btn btn-secondary">💬 Open Chats</a>
+                <a href="profile.html" class="btn btn-secondary">👤 View Profile</a>
+            </div>
+        </div>
+
+        <!-- Featured Games -->
+        <div class="card vexa-card">
+            <h3 class="vexa-heading">Featured Games</h3>
+            <div class="games-grid" id="featured-games" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 16px 0;"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav vexa-nav">
+        <a href="home.html" class="nav-item vexa-nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="games.html" class="nav-item vexa-nav-item">
+            <span class="nav-icon">🎮</span>
+            <span>Games</span>
+        </a>
+        <a href="chat.html" class="nav-item vexa-nav-item">
+            <span class="nav-icon">💬</span>
+            <span>Chat</span>
+        </a>
+        <a href="account.html" class="nav-item vexa-nav-item">
+            <span class="nav-icon">👤</span>
+            <span>Account</span>
+        </a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>
