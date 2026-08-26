@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Coin Flip</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo/vexa-icon.svg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/vexa-brand.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <style>
+        .game-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background: var(--vexa-glass);
+            border: 1px solid var(--vexa-glass-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: var(--vexa-radius-md);
+            cursor: pointer;
+            text-decoration: none;
+            font-family: var(--vexa-font-secondary);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            border-color: var(--vexa-primary);
+            box-shadow: 0 0 15px rgba(108, 60, 225, 0.3);
+        }
+        
+        .coin {
+            width: 150px;
+            height: 150px;
+            margin: 40px auto;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            cursor: pointer;
+            transition: transform 0.6s;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.3);
+            position: relative;
+        }
+        
+        .coin.flipping {
+            animation: coinFlip 1s ease;
+        }
+        
+        @keyframes coinFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(1800deg); }
+            100% { transform: rotateY(0deg); }
+        }
+        
+        .choice-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 24px 0;
+        }
+        
+        .choice-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--vexa-radius-md);
+            font-family: var(--vexa-font-secondary);
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+        
+        .heads-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+        
+        .tails-btn {
+            background: linear-gradient(135deg, #C0C0C0, #808080);
+            color: #000;
+        }
+        
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .result-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 16px 0;
+            min-height: 36px;
+        }
+        
+        .game-stats {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 24px 0;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .stat-box {
+            background: var(--vexa-glass);
+            border: 1px solid var(--vexa-glass-border);
+            border-radius: var(--vexa-radius-md);
+            padding: 12px;
+            flex: 1;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: var(--vexa-font-secondary);
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--vexa-secondary);
+            font-family: var(--vexa-font-primary);
+        }
+        
+        .disclaimer {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="vexa-bg-pattern"></div>
+    
+    <div class="game-container">
+        <div class="game-header">
+            <a href="../games.html" class="back-btn">← Back</a>
+            <h1 class="vexa-title" style="font-size: 24px;">🪙 Coin Flip</h1>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-box">
+                <div class="stat-label">Balance</div>
+                <div class="stat-value" id="balance">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Wins</div>
+                <div class="stat-value" id="wins">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Losses</div>
+                <div class="stat-value" id="losses">0</div>
+            </div>
+        </div>
+        
+        <div class="coin" id="coin" onclick="flipCoin()">
+            🪙
+        </div>
+        
+        <div class="choice-buttons">
+            <button class="choice-btn heads-btn" onclick="chooseSide('heads')">HEADS</button>
+            <button class="choice-btn tails-btn" onclick="chooseSide('tails')">TAILS</button>
+        </div>
+        
+        <div class="result-text" id="result"></div>
+        
+        <p class="disclaimer">🎮 Virtual coins only. No real-money gambling.</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        let currentUser = null;
+        let userBalance = 0;
+        let wins = 0;
+        let losses = 0;
+        let isFlipping = false;
+        
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = '../login.html';
+                return;
+            }
+            currentUser = user;
+            await loadUserData();
+        });
+        
+        async function loadUserData() {
+            const snapshot = await database.ref(`usersProgress/${currentUser.uid}`).once('value');
+            const data = snapshot.val();
+            userBalance = data.coins;
+            document.getElementById('balance').textContent = `${userBalance} 🪙`;
+        }
+        
+        function chooseSide(choice) {
+            if (isFlipping) return;
+            if (userBalance < 10) {
+                ChronoUtils.showToast('Not enough coins! You need at least 10 coins.', 'error');
+                return;
+            }
+            
+            isFlipping = true;
+            const coin = document.getElementById('coin');
+            coin.classList.add('flipping');
+            
+            setTimeout(async () => {
+                coin.classList.remove('flipping');
+                const result = Math.random() < 0.5 ? 'heads' : 'tails';
+                const won = choice === result;
+                
+                if (won) {
+                    userBalance += 10;
+                    wins++;
+                    document.getElementById('result').textContent = '🎉 You won! +10 coins!';
+                    document.getElementById('result').style.color = '#10b981';
+                } else {
+                    userBalance -= 10;
+                    losses++;
+                    document.getElementById('result').textContent = '😢 You lost! -10 coins!';
+                    document.getElementById('result').style.color = '#ef4444';
+                }
+                
+                document.getElementById('balance').textContent = `${userBalance} 🪙`;
+                document.getElementById('wins').textContent = wins;
+                document.getElementById('losses').textContent = losses;
+                
+                await database.ref(`usersProgress/${currentUser.uid}`).update({
+                    coins: userBalance
+                });
+                
+                const statsRef = database.ref(`gameStats/${currentUser.uid}/coin_flip`);
+                const statsSnapshot = await statsRef.once('value');
+                const stats = statsSnapshot.val() || { gamesPlayed: 0, highScore: 0 };
+                
+                await statsRef.update({
+                    gamesPlayed: stats.gamesPlayed + 1,
+                    highScore: Math.max(stats.highScore, wins)
+                });
+                
+                if (won) {
+                    await awardXP(5);
+                }
+                
+                isFlipping = false;
+            }, 1000);
+        }
+        
+        async function awardXP(xpAmount) {
+            const progressRef = database.ref(`usersProgress/${currentUser.uid}`);
+            const snapshot = await progressRef.once('value');
+            const data = snapshot.val();
+            await progressRef.update({
+                totalXP: data.totalXP + xpAmount
+            });
+        }
+        
+        function flipCoin() {
+            if (isFlipping) return;
+            isFlipping = true;
+            const coin = document.getElementById('coin');
+            coin.classList.add('flipping');
+            
+            setTimeout(() => {
+                coin.classList.remove('flipping');
+                const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
+                document.getElementById('result').textContent = `Coin shows: ${result}`;
+                document.getElementById('result').style.color = '#FFD700';
+                isFlipping = false;
+            }, 1000);
+        }a
+    </script>
+</body>
+</html>
