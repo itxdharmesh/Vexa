@@ -4,362 +4,191 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Settings</title>
-    <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/vexa-brand.css">
     <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <style>
-        .settings-container {
-            padding: 20px 0;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .settings-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-        }
-        
-        .settings-card {
-            background: var(--vexa-glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-xl);
-            padding: 24px;
-            margin: 16px 0;
-        }
-        
-        .settings-section {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px;
-            border-bottom: 1px solid var(--vexa-glass-border);
-        }
-        
-        .settings-section:last-child {
-            border-bottom: none;
-        }
-        
-        .settings-icon {
-            font-size: 24px;
-            width: 40px;
-            text-align: center;
-        }
-        
-        .settings-info {
-            flex: 1;
-        }
-        
-        .settings-title {
-            font-weight: 600;
-            font-family: var(--vexa-font-secondary);
-            font-size: 16px;
-        }
-        
-        .settings-subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-            background: var(--bg-secondary);
-            border-radius: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .toggle-switch.active {
-            background: linear-gradient(135deg, var(--vexa-primary), var(--vexa-secondary));
-        }
-        
-        .toggle-knob {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        
-        .toggle-switch.active .toggle-knob {
-            left: 27px;
-        }
-        
-        .edit-profile-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--vexa-primary), var(--vexa-secondary));
-            border: none;
-            border-radius: var(--vexa-radius-md);
-            color: white;
-            font-family: var(--vexa-font-secondary);
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-        
-        .edit-profile-btn:hover {
-            box-shadow: 0 0 20px rgba(108, 60, 225, 0.5);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: var(--vexa-card);
-            border: 1px solid var(--vexa-primary);
-            border-radius: var(--vexa-radius-xl);
-            padding: 32px;
-            width: 90%;
-            max-width: 400px;
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
 </head>
 <body>
-    <div class="vexa-bg-pattern"></div>
-    
-    <div class="container settings-container">
-        <header class="settings-header">
-            <a href="account.html" class="btn btn-secondary">← Back</a>
-            <h1 class="vexa-title" style="font-size: 24px;">⚙️ Settings</h1>
-        </header>
-        
-        <!-- Profile Settings -->
-        <div class="settings-card">
-            <h3 class="vexa-heading" style="margin-bottom: 16px;">👤 Profile</h3>
-            <button class="edit-profile-btn" onclick="openEditProfile()">EDIT PROFILE</button>
-        </div>
-        
-        <!-- Preferences -->
-        <div class="settings-card">
-            <h3 class="vexa-heading" style="margin-bottom: 16px;">🎨 Preferences</h3>
+    <div class="app-header">
+        <a href="account.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
+        <span style="font-weight:600;">⚙️ Settings</span>
+        <span></span>
+    </div>
+
+    <div class="container">
+        <!-- Appearance -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">🎨 Appearance</h3>
             
-            <div class="settings-section">
-                <div class="settings-icon">🌙</div>
-                <div class="settings-info">
-                    <div class="settings-title">Dark Theme</div>
-                    <div class="settings-subtitle">Always enabled</div>
-                </div>
-                <div class="toggle-switch active" onclick="toggleTheme()">
+            <div class="setting-item">
+                <span>🌙 Dark Theme</span>
+                <div class="toggle active" id="toggle-theme" onclick="toggleSetting('theme')">
                     <div class="toggle-knob"></div>
                 </div>
             </div>
             
-            <div class="settings-section">
-                <div class="settings-icon">🔊</div>
-                <div class="settings-info">
-                    <div class="settings-title">Sound Effects</div>
-                    <div class="settings-subtitle">Game sounds</div>
-                </div>
-                <div class="toggle-switch active" id="sound-toggle" onclick="toggleSound()">
+            <div class="setting-item">
+                <span>🔊 Sound Effects</span>
+                <div class="toggle active" id="toggle-sound" onclick="toggleSetting('sound')">
                     <div class="toggle-knob"></div>
                 </div>
             </div>
             
-            <div class="settings-section">
-                <div class="settings-icon">🔔</div>
-                <div class="settings-info">
-                    <div class="settings-title">Notifications</div>
-                    <div class="settings-subtitle">Push notifications</div>
-                </div>
-                <div class="toggle-switch active" id="notification-toggle" onclick="toggleNotifications()">
+            <div class="setting-item">
+                <span>✨ Reduce Animations</span>
+                <div class="toggle" id="toggle-animations" onclick="toggleSetting('animations')">
                     <div class="toggle-knob"></div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Privacy -->
-        <div class="settings-card">
-            <h3 class="vexa-heading" style="margin-bottom: 16px;">🔒 Privacy</h3>
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">🔒 Privacy</h3>
             
-            <div class="settings-section" onclick="showComingSoon()">
-                <div class="settings-icon">👁️</div>
-                <div class="settings-info">
-                    <div class="settings-title">Profile Visibility</div>
-                    <div class="settings-subtitle">Who can see your profile</div>
+            <div class="setting-item">
+                <span>👁️ Show Online Status</span>
+                <div class="toggle active" id="toggle-online" onclick="toggleSetting('online')">
+                    <div class="toggle-knob"></div>
                 </div>
-                <div class="settings-subtitle">Public ›</div>
             </div>
             
-            <div class="settings-section" onclick="showComingSoon()">
-                <div class="settings-icon">🚫</div>
-                <div class="settings-info">
-                    <div class="settings-title">Blocked Users</div>
-                    <div class="settings-subtitle">Manage blocked users</div>
+            <div class="setting-item">
+                <span>📅 Show Last Seen</span>
+                <div class="toggle active" id="toggle-lastseen" onclick="toggleSetting('lastseen')">
+                    <div class="toggle-knob"></div>
                 </div>
-                <div class="settings-subtitle">›</div>
+            </div>
+            
+            <div class="setting-item">
+                <span>✓ Read Receipts</span>
+                <div class="toggle active" id="toggle-read" onclick="toggleSetting('read')">
+                    <div class="toggle-knob"></div>
+                </div>
             </div>
         </div>
-        
-        <!-- Account -->
-        <div class="settings-card">
-            <h3 class="vexa-heading" style="margin-bottom: 16px;">📧 Account</h3>
+
+        <!-- Notifications -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">🔔 Notifications</h3>
             
-            <div class="settings-section" onclick="showComingSoon()">
-                <div class="settings-icon">✉️</div>
-                <div class="settings-info">
-                    <div class="settings-title">Email</div>
-                    <div class="settings-subtitle" id="settings-email">email@example.com</div>
+            <div class="setting-item">
+                <span>💬 Messages</span>
+                <div class="toggle active" id="toggle-msg" onclick="toggleSetting('msg')">
+                    <div class="toggle-knob"></div>
                 </div>
-                <div class="settings-subtitle">›</div>
             </div>
             
-            <div class="settings-section" onclick="showComingSoon()">
-                <div class="settings-icon">🔑</div>
-                <div class="settings-info">
-                    <div class="settings-title">Change Password</div>
-                    <div class="settings-subtitle">Update your password</div>
+            <div class="setting-item">
+                <span>👥 Friend Requests</span>
+                <div class="toggle active" id="toggle-friend" onclick="toggleSetting('friend')">
+                    <div class="toggle-knob"></div>
                 </div>
-                <div class="settings-subtitle">›</div>
+            </div>
+            
+            <div class="setting-item">
+                <span>🎁 Daily Rewards</span>
+                <div class="toggle active" id="toggle-reward" onclick="toggleSetting('reward')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">💾 Data</h3>
+            
+            <div class="setting-item" onclick="clearCache()" style="cursor:pointer;">
+                <span>🗑️ Clear Local Cache</span>
+                <span style="color:var(--text-muted);">›</span>
             </div>
         </div>
     </div>
 
-    <!-- Edit Profile Modal -->
-    <div class="modal" id="edit-profile-modal">
-        <div class="modal-content">
-            <h2 class="vexa-heading" style="margin-bottom: 20px;">Edit Profile</h2>
-            
-            <div class="input-group">
-                <label class="input-label">Display Name</label>
-                <input type="text" class="input-field" id="edit-display-name" placeholder="Enter display name">
-            </div>
-            
-            <div class="input-group">
-                <label class="input-label">Bio</label>
-                <textarea class="input-field" id="edit-bio" placeholder="Tell us about yourself" rows="3"></textarea>
-            </div>
-            
-            <div style="display: flex; gap: 12px; margin-top: 20px;">
-                <button class="btn btn-primary" onclick="saveProfile()">SAVE</button>
-                <button class="btn btn-secondary" onclick="closeEditProfile()">CANCEL</button>
-            </div>
-        </div>
-    </div>
+    <style>
+        .setting-item {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:14px 0;
+            border-bottom:1px solid var(--border);
+            font-size:14px;
+        }
+        .setting-item:last-child {
+            border-bottom:none;
+        }
+        .toggle {
+            width:44px;
+            height:24px;
+            background:var(--bg-primary);
+            border-radius:12px;
+            cursor:pointer;
+            position:relative;
+            transition:background 0.3s;
+        }
+        .toggle.active {
+            background:linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+        }
+        .toggle-knob {
+            position:absolute;
+            top:2px;
+            left:2px;
+            width:20px;
+            height:20px;
+            background:white;
+            border-radius:50%;
+            transition:left 0.3s;
+        }
+        .toggle.active .toggle-knob {
+            left:22px;
+        }
+    </style>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
     <script>
-        let currentUser = null;
-        
-        authManager.init();
-        
-        authManager.onAuthStateChange(async (user) => {
+        auth.onAuthStateChanged(function(user) {
             if (!user) {
-                window.location.href = 'login.html';
+                window.location.replace('login.html');
                 return;
             }
-            currentUser = user;
-            loadUserData(user);
-            loadPreferences();
+            loadSettings();
         });
         
-        async function loadUserData(user) {
-            const snapshot = await database.ref(`users/${user.uid}`).once('value');
-            const userData = snapshot.val();
+        function loadSettings() {
+            var settings = JSON.parse(localStorage.getItem('vexa_settings') || '{}');
             
-            document.getElementById('settings-email').textContent = userData.email;
-            document.getElementById('edit-display-name').value = userData.displayName || '';
-            document.getElementById('edit-bio').value = userData.bio || '';
-        }
-        
-        function loadPreferences() {
-            const soundEnabled = localStorage.getItem('vexa_sound') !== 'false';
-            const notificationsEnabled = localStorage.getItem('vexa_notifications') !== 'false';
+            var keys = ['theme', 'sound', 'animations', 'online', 'lastseen', 'read', 'msg', 'friend', 'reward'];
             
-            if (!soundEnabled) {
-                document.getElementById('sound-toggle').classList.remove('active');
-            }
-            
-            if (!notificationsEnabled) {
-                document.getElementById('notification-toggle').classList.remove('active');
-            }
-        }
-        
-        function toggleTheme() {
-            ChronoUtils.showToast('Dark theme is always enabled!', 'info');
-        }
-        
-        function toggleSound() {
-            const toggle = document.getElementById('sound-toggle');
-            toggle.classList.toggle('active');
-            localStorage.setItem('vexa_sound', toggle.classList.contains('active'));
-        }
-        
-        function toggleNotifications() {
-            const toggle = document.getElementById('notification-toggle');
-            toggle.classList.toggle('active');
-            localStorage.setItem('vexa_notifications', toggle.classList.contains('active'));
-        }
-        
-        function openEditProfile() {
-            document.getElementById('edit-profile-modal').style.display = 'flex';
-        }
-        
-        function closeEditProfile() {
-            document.getElementById('edit-profile-modal').style.display = 'none';
-        }
-        
-        async function saveProfile() {
-            const displayName = document.getElementById('edit-display-name').value.trim();
-            const bio = document.getElementById('edit-bio').value.trim();
-            
-            if (!displayName) {
-                ChronoUtils.showToast('Display name cannot be empty', 'error');
-                return;
-            }
-            
-            await database.ref(`users/${currentUser.uid}`).update({
-                displayName,
-                bio
+            keys.forEach(function(key) {
+                var toggle = document.getElementById('toggle-' + key);
+                if (toggle) {
+                    if (settings[key] === false) {
+                        toggle.classList.remove('active');
+                    }
+                }
             });
-            
-            await currentUser.updateProfile({ displayName });
-            
-            closeEditProfile();
-            ChronoUtils.showToast('Profile updated successfully!', 'success');
         }
         
-        function showComingSoon() {
-            ChronoUtils.showToast('Coming soon!', 'info');
+        function toggleSetting(key) {
+            var toggle = document.getElementById('toggle-' + key);
+            toggle.classList.toggle('active');
+            
+            var settings = JSON.parse(localStorage.getItem('vexa_settings') || '{}');
+            settings[key] = toggle.classList.contains('active');
+            localStorage.setItem('vexa_settings', JSON.stringify(settings));
+            
+            Utils.showToast('Setting saved!', 'success');
+        }
+        
+        function clearCache() {
+            if (confirm('Clear local cache?')) {
+                localStorage.removeItem('vexa_settings');
+                Utils.showToast('Cache cleared!', 'success');
+            }
         }
     </script>
 </body>
-      </html>
+</html>a
