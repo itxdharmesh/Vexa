@@ -1,120 +1,119 @@
-// Profile page logic for VEXA
-
-class ProfileManager {
-    constructor() {
-        this.currentUser = null;
-        this.userData = null;
-        this.userProgress = null;
-        this.streakData = null;
-        this.achievementsData = [];
-        this.userAchievements = {};
-        this.gameStats = {};
+auth.onAuthStateChanged(async function(user) {
+    if (!user) {
+        window.location.replace('login.html');
+        return;
     }
-
-    async init() {
-        authManager.init();
+    
+    try {
+        var userSnapshot = await database.ref('users/' + user.uid).once('value');
+        var userData = userSnapshot.val() || {};
         
-        authManager.onAuthStateChange(async (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            this.currentUser = user;
-            await this.loadUserData();
-            await this.loadAchievements();
-            await this.loadGameStats();
-            this.renderProfile();
-        });
-    }
-
-    async loadUserData() {
-        const userSnapshot = await database.ref(`users/${this.currentUser.uid}`).once('value');
-        this.userData = userSnapshot.val();
+        var progressSnapshot = await database.ref('progress/' + user.uid).once('value');
+        var progressData = progressSnapshot.val() || { coins: 0, xp: 0, level: 1 };
         
-        const progressSnapshot = await database.ref(`usersProgress/${this.currentUser.uid}`).once('value');
-        this.userProgress = progressSnapshot.val();
+        var streakSnapshot = await database.ref('streaks/' + user.uid).once('value');
+        var streakData = streakSnapshot.val() || { currentStreak: 0 };
         
-        const streakSnapshot = await database.ref(`streaks/${this.currentUser.uid}`).once('value');
-        this.streakData = streakSnapshot.val();
-    }
-
-    async loadAchievements() {
-        const response = await fetch('data/achievements.json');
-        this.achievementsData = await response.json();
+        var friendsSnapshot = await database.ref('friends/' + user.uid).once('value');
+        var friendsCount = friendsSnapshot.val() ? Object.keys(friendsSnapshot.val()).length : 0;
         
-        const achievementsSnapshot = await database.ref(`achievements/${this.currentUser.uid}`).once('value');
-        this.userAchievements = achievementsSnapshot.val() || {};
-    }
-
-    async loadGameStats() {
-        const statsSnapshot = await database.ref(`gameStats/${this.currentUser.uid}`).once('value');
-        this.gameStats = statsSnapshot.val() || {};
-    }
-
-    renderProfile() {
-        const levelInfo = ChronoUtils.calculateLevel(this.userProgress.totalXP);
+        var followersSnapshot = await database.ref('followers/' + user.uid).once('value');
+        var followersCount = followersSnapshot.val() ? Object.keys(followersSnapshot.val()).length : 0;
         
-        document.getElementById('profile-avatar').textContent = this.userData.displayName ? this.userData.displayName[0].toUpperCase() : 'V';
-        document.getElementById('profile-avatar').style.background = this.userData.avatarColor || 'linear-gradient(135deg, #6C3CE1, #00D4FF)';
+        var followingSnapshot = await database.ref('following/' + user.uid).once('value');
+        var followingCount = followingSnapshot.val() ? Object.keys(followingSnapshot.val()).length : 0;
         
-        document.getElementById('profile-name').textContent = this.userData.displayName;
-        document.getElementById('profile-username').textContent = `@${this.userData.username}`;
-        document.getElementById('profile-bio').textContent = this.userData.bio || 'No bio yet';
+        var gameStatsSnapshot = await database.ref('gameStats/' + user.uid).once('value');
+        var gameStats = gameStatsSnapshot.val() || {};
+        var totalGames = Object.values(gameStats).reduce(function(sum, game) {
+            return sum + (game.gamesPlayed || 0);
+        }, 0);
         
+        var levelInfo = Utils.calculateLevel(progressData.xp);
+        
+        var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
+        var avatarHTML = userData.avatarURL ? 
+            '<img src="' + userData.avatarURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : 
+            avatarText;
+        
+        document.getElementById('profile-avatar').innerHTML = avatarHTML;
+        document.getElementById('profile-name').textContent = userData.displayName || 'User';
+        document.getElementById('profile-username').textContent = '@' + (userData.username || 'user');
+        document.getElementById('profile-bio').textContent = userData.bio || 'No bio yet';
+        
+        document.getElementById('profile-friends').textContent = friendsCount;
+        document.getElementById('profile-followers').textContent = followersCount;
+        document.getElementById('profile-following').textContent = followingCount;
         document.getElementById('profile-level').textContent = levelInfo.level;
-        document.getElementById('profile-xp').textContent = ChronoUtils.formatNumber(this.userProgress.totalXP);
-        document.getElementById('profile-coins').textContent = ChronoUtils.formatNumber(this.userProgress.coins);
-        document.getElementById('profile-streak').textContent = this.streakData.currentStreak;
+        document.getElementById('profile-streak').textContent = streakData.currentStreak;
+        document.getElementById('profile-games').textContent = totalGames;
         
-        this.renderAchievements();
-        this.renderGameStats();
+        loadAchievements(user.uid);
+        loadGameStats(user.uid);
+        
+    } catch (error) {
+        console.error('Error loading profile:', error);
     }
+});
 
-    renderAchievements() {
-        const grid = document.getElementById('achievements-grid');
+async function loadAchievements(userId) {
+    var container = document.getElementById('achievements-list');
+    
+    try {
+        var achievementsSnapshot = await database.ref('achievements/' + userId).once('value');
+        var achievements = achievementsSnapshot.val() || {};
         
-        grid.innerHTML = this.achievementsData.map(achievement => {
-            const userProgress = this.userAchievements[achievement.id];
-            const progress = userProgress ? userProgress.progress : 0;
-            const unlocked = progress >= achievement.target;
-            
-            return `
-                <div class="achievement-item ${unlocked ? 'unlocked' : ''}">
-                    <div class="achievement-icon">${achievement.icon}</div>
-                    <div class="achievement-name">${achievement.name}</div>
-                    <div class="achievement-progress">${progress}/${achievement.target}</div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    renderGameStats() {
-        const list = document.getElementById('game-stats-list');
+        var keys = Object.keys(achievements);
         
-        if (Object.keys(this.gameStats).length === 0) {
-            list.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No games played yet</p>';
+        if (keys.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;">No achievements yet. Play games to earn them!</p>';
             return;
         }
         
-        list.innerHTML = Object.entries(this.gameStats).map(([gameId, stats]) => `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--vexa-glass-border);">
-                <div>
-                    <div style="font-weight: 600; font-family: 'Rajdhani', sans-serif;">${this.formatGameName(gameId)}</div>
-                    <div style="font-size: 12px; color: var(--text-muted);">${stats.gamesPlayed || 0} games played</div>
+        container.innerHTML = keys.map(function(achievementId) {
+            var achievement = achievements[achievementId];
+            var unlocked = achievement.unlocked ? '✅' : '🔒';
+            return `
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+                    <span style="font-size:24px;">${unlocked}</span>
+                    <div style="flex:1;">
+                        <div style="font-weight:600;font-size:13px;">${achievementId.replace(/_/g, ' ')}</div>
+                        <div style="font-size:11px;color:var(--text-muted);">Progress: ${achievement.progress || 0}</div>
+                    </div>
                 </div>
-                <div style="text-align: right;">
-                    <div style="color: var(--vexa-secondary); font-weight: 700;">High Score: ${stats.highScore || 0}</div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    formatGameName(gameId) {
-        return gameId.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading achievements:', error);
     }
 }
 
-const profileManager = new ProfileManager();
-window.profileManager = profileManager;
-document.addEventListener('DOMContentLoaded', () => profileManager.init());2
+async function loadGameStats(userId) {
+    var container = document.getElementById('game-stats');
+    
+    try {
+        var statsSnapshot = await database.ref('gameStats/' + userId).once('value');
+        var stats = statsSnapshot.val() || {};
+        
+        var gameIds = Object.keys(stats);
+        
+        if (gameIds.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;">No games played yet</p>';
+            return;
+        }
+        
+        container.innerHTML = gameIds.map(function(gameId) {
+            var game = stats[gameId];
+            return `
+                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+                    <span style="font-weight:600;font-size:13px;">${gameId.replace(/-/g, ' ')}</span>
+                    <span style="font-size:13px;color:var(--accent-blue);">High Score: ${game.highScore || 0}</span>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading game stats:', error);
+    }
+}
