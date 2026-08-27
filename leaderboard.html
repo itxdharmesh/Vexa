@@ -1,109 +1,82 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEXA - Leaderboard</title>
-    <link rel="stylesheet" href="css/global.css">
-</head>
-<body>
-    <div class="app-header">
-        <a href="account.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
-        <span style="font-weight:600;">🥇 Leaderboard</span>
-        <span></span>
-    </div>
-
-    <div class="container">
-        <div style="display:flex;gap:8px;margin-bottom:16px;">
-            <button class="btn btn-primary btn-small" id="tab-global" onclick="switchTab('global')">GLOBAL</button>
-            <button class="btn btn-secondary btn-small" id="tab-friends" onclick="switchTab('friends')">FRIENDS</button>
-        </div>
-
-        <div id="leaderboard-list"></div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-    <script src="js/firebase-config.js"></script>
-    <script src="js/utils.js"></script>
-    <script>
-        let currentUser = null;
-        let currentTab = 'global';
+async function loadLeaderboard() {
+    var list = document.getElementById('leaderboard-list');
+    list.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Loading...</p>';
+    
+    try {
+        var progressSnapshot = await database.ref('progress').orderByChild('xp').limitToLast(50).once('value');
+        var players = [];
         
-        auth.onAuthStateChanged(function(user) {
-            if (!user) { window.location.replace('login.html'); return; }
-            currentUser = user;
-            loadLeaderboard();
+        progressSnapshot.forEach(function(child) {
+            players.push({ userId: child.key, ...child.val() });
         });
         
-        function switchTab(tab) {
-            currentTab = tab;
-            if (tab === 'global') {
-                document.getElementById('tab-global').className = 'btn btn-primary btn-small';
-                document.getElementById('tab-friends').className = 'btn btn-secondary btn-small';
-            } else {
-                document.getElementById('tab-global').className = 'btn btn-secondary btn-small';
-                document.getElementById('tab-friends').className = 'btn btn-primary btn-small';
-            }
-            loadLeaderboard();
+        players.reverse();
+        
+        // EMPTY STATE - Not error
+        if (players.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🥇</div>
+                    <div class="empty-state-title">No leaderboard data yet</div>
+                    <div class="empty-state-text">Be the first to play and earn XP!</div>
+                    <a href="games.html" class="btn btn-primary btn-small">PLAY GAMES</a>
+                </div>
+            `;
+            return;
         }
         
-        async function loadLeaderboard() {
-            var list = document.getElementById('leaderboard-list');
-            list.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Loading...</p>';
+        // Filter for friends if needed
+        if (currentTab === 'friends') {
+            var friendsSnapshot = await database.ref('friends/' + currentUser.uid).once('value');
+            var friends = friendsSnapshot.val() || {};
+            players = players.filter(function(p) { return friends[p.userId]; });
             
-            try {
-                var progressSnapshot = await database.ref('progress').orderByChild('xp').limitToLast(50).once('value');
-                var players = [];
-                
-                progressSnapshot.forEach(function(child) {
-                    players.push({ userId: child.key, ...child.val() });
-                });
-                
-                players.reverse();
-                
-                if (currentTab === 'friends') {
-                    var friendsSnapshot = await database.ref('friends/' + currentUser.uid).once('value');
-                    var friends = friendsSnapshot.val() || {};
-                    players = players.filter(function(p) { return friends[p.userId]; });
-                }
-                
-                if (players.length === 0) {
-                    list.innerHTML = '<div class="empty-state"><div class="empty-state-title">No players found</div></div>';
-                    return;
-                }
-                
-                list.innerHTML = '';
-                
-                for (var i = 0; i < Math.min(players.length, 20); i++) {
-                    var player = players[i];
-                    var userSnapshot = await database.ref('users/' + player.userId).once('value');
-                    var userData = userSnapshot.val() || {};
-                    
-                    var rankClass = i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'var(--text-muted)';
-                    var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
-                    
-                    var div = document.createElement('div');
-                    div.className = 'card';
-                    div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:8px;';
-                    div.innerHTML = `
-                        <span style="font-size:20px;font-weight:700;color:${rankClass};width:30px;">${i + 1}</span>
-                        <div class="avatar">${avatarText}</div>
-                        <div style="flex:1;">
-                            <div style="font-weight:600;font-size:14px;">${userData.displayName || 'User'}</div>
-                            <div style="font-size:12px;color:var(--text-muted);">@${userData.username || 'user'}</div>
-                        </div>
-                        <span style="color:var(--accent-blue);font-weight:700;font-size:14px;">⭐ ${Utils.formatNumber(player.xp)}</span>
-                    `;
-                    list.appendChild(div);
-                }
-                
-            } catch (error) {
-                console.error('Leaderboard error:', error);
-                list.innerHTML = '<p style="text-align:center;color:var(--danger);">Failed to load leaderboard</p>';
+            if (players.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <div class="empty-state-title">No friends on leaderboard</div>
+                        <div class="empty-state-text">Add friends to compete!</div>
+                        <a href="friends.html" class="btn btn-primary btn-small">FIND FRIENDS</a>
+                    </div>
+                `;
+                return;
             }
         }
-    </script>
-</body>
-</html>
+        
+        list.innerHTML = '';
+        
+        for (var i = 0; i < Math.min(players.length, 20); i++) {
+            var player = players[i];
+            var userSnapshot = await database.ref('users/' + player.userId).once('value');
+            var userData = userSnapshot.val() || {};
+            
+            var rankClass = i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'var(--text-muted)';
+            var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
+            
+            var div = document.createElement('div');
+            div.className = 'card';
+            div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:8px;';
+            div.innerHTML = `
+                <span style="font-size:20px;font-weight:700;color:${rankClass};width:30px;">${i + 1}</span>
+                <div class="avatar">${avatarText}</div>
+                <div style="flex:1;">
+                    <div style="font-weight:600;font-size:14px;">${userData.displayName || 'User'}</div>
+                    <div style="font-size:12px;color:var(--text-muted);">@${userData.username || 'user'}</div>
+                </div>
+                <span style="color:var(--accent-blue);font-weight:700;">⭐ ${Utils.formatNumber(player.xp || 0)}</span>
+            `;
+            list.appendChild(div);
+        }
+        
+    } catch (error) {
+        console.error('Leaderboard error:', error);
+        list.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">⚠️</div>
+                <div class="empty-state-title">Couldn't load this right now</div>
+                <button class="btn btn-secondary btn-small" onclick="loadLeaderboard()">RETRY</button>
+            </div>
+        `;
+    }
+}
