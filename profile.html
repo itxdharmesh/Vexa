@@ -3,245 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEXA - Profile</title>
-    <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/vexa-brand.css">
+    <title>VEXA - My Profile</title>
     <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <style>
-        .profile-container {
-            padding: 20px 0;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .profile-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-        }
-        
-        .profile-card {
-            background: var(--vexa-glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-xl);
-            padding: 32px;
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--vexa-primary), var(--vexa-secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            font-weight: bold;
-            color: white;
-            margin: 0 auto 16px;
-            font-family: var(--vexa-font-primary);
-            box-shadow: 0 0 30px rgba(108, 60, 225, 0.5);
-        }
-        
-        .profile-name {
-            font-size: 24px;
-            font-weight: 700;
-            font-family: var(--vexa-font-secondary);
-            margin-bottom: 4px;
-        }
-        
-        .profile-username {
-            font-size: 16px;
-            color: var(--vexa-secondary);
-            margin-bottom: 8px;
-        }
-        
-        .profile-bio {
-            color: var(--text-muted);
-            margin-bottom: 16px;
-            font-size: 14px;
-        }
-        
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-        }
-        
-        .profile-stat {
-            background: var(--vexa-glass);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-md);
-            padding: 16px;
-        }
-        
-        .profile-stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--vexa-secondary);
-            font-family: var(--vexa-font-primary);
-        }
-        
-        .profile-stat-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: var(--vexa-font-secondary);
-            font-weight: 600;
-        }
-        
-        .profile-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 12px;
-            margin: 20px 0;
-        }
-        
-        .achievement-item {
-            background: var(--vexa-glass);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-md);
-            padding: 16px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        
-        .achievement-item.unlocked {
-            border-color: var(--vexa-gold);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-        }
-        
-        .achievement-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-        
-        .achievement-name {
-            font-size: 12px;
-            font-weight: 600;
-            font-family: var(--vexa-font-secondary);
-        }
-        
-        .achievement-progress {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-    </style>
 </head>
 <body>
-    <div class="vexa-bg-pattern"></div>
-    
-    <div class="container profile-container">
-        <header class="profile-header">
-            <a href="home.html" class="vexa-logo">
-                <div class="vexa-logo-icon"></div>
-            </a>
-            <h1 class="vexa-title" style="font-size: 24px;">👤 Profile</h1>
-        </header>
-        
-        <div class="profile-card">
-            <div class="profile-avatar" id="profile-avatar">V</div>
-            <div class="profile-name" id="profile-name">Display Name</div>
-            <div class="profile-username" id="profile-username">@username</div>
-            <div class="profile-bio" id="profile-bio">No bio yet</div>
-            
-            <div class="profile-stats">
-                <div class="profile-stat">
-                    <div class="profile-stat-value" id="profile-level">1</div>
-                    <div class="profile-stat-label">Level</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat-value" id="profile-xp">0</div>
-                    <div class="profile-stat-label">XP</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat-value" id="profile-coins">0</div>
-                    <div class="profile-stat-label">Coins</div>
-                </div>
+    <div class="app-header">
+        <a href="account.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
+        <span style="font-weight:600;">My Profile</span>
+        <a href="edit-profile.html" style="text-decoration:none;color:var(--accent-blue);font-size:14px;">Edit</a>
+    </div>
+
+    <div class="container">
+        <div class="card" style="text-align:center;padding:24px;">
+            <div class="avatar avatar-large" id="profile-avatar" style="margin:0 auto 12px;">?</div>
+            <h2 id="profile-name" style="font-size:20px;">Loading...</h2>
+            <p id="profile-username" style="color:var(--text-muted);font-size:14px;">@username</p>
+            <p id="profile-bio" style="color:var(--text-secondary);font-size:13px;margin-top:8px;">No bio yet</p>
+        </div>
+
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="stat-card">
+                <div class="stat-value" id="profile-friends">0</div>
+                <div class="stat-label">Friends</div>
             </div>
-            
-            <div class="profile-stats">
-                <div class="profile-stat">
-                    <div class="profile-stat-value" id="profile-streak">0</div>
-                    <div class="profile-stat-label">Streak</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat-value" id="profile-followers">0</div>
-                    <div class="profile-stat-label">Followers</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat-value" id="profile-following">0</div>
-                    <div class="profile-stat-label">Following</div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-value" id="profile-followers">0</div>
+                <div class="stat-label">Followers</div>
             </div>
-            
-            <div class="profile-actions">
-                <a href="settings.html" class="btn btn-secondary">⚙️ Edit Profile</a>
-                <a href="account.html" class="btn btn-secondary">👤 Account</a>
+            <div class="stat-card">
+                <div class="stat-value" id="profile-following">0</div>
+                <div class="stat-label">Following</div>
             </div>
         </div>
-        
-        <!-- Achievements Section -->
-        <div class="card vexa-card">
-            <h3 class="vexa-heading">🏆 Achievements</h3>
-            <div class="achievements-grid" id="achievements-grid"></div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="profile-level">1</div>
+                <div class="stat-label">⭐ Level</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="profile-streak">0</div>
+                <div class="stat-label">🔥 Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="profile-games">0</div>
+                <div class="stat-label">🎮 Games Played</div>
+            </div>
         </div>
-        
-        <!-- Game Stats Section -->
-        <div class="card vexa-card">
-            <h3 class="vexa-heading">🎮 Game Statistics</h3>
-            <div id="game-stats-list"></div>
+
+        <!-- Achievements -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">🏆 Achievements</h3>
+            <div id="achievements-list"></div>
+        </div>
+
+        <!-- Game Stats -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">🎮 Game Statistics</h3>
+            <div id="game-stats"></div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav vexa-nav">
-        <a href="home.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="games.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">🎮</span>
-            <span>Games</span>
-        </a>
-        <a href="chat.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">💬</span>
-            <span>Chat</span>
-        </a>
-        <a href="account.html" class="nav-item vexa-nav-item active">
-            <span class="nav-icon">👤</span>
-            <span>Account</span>
-        </a>
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
+        <a href="games.html" class="nav-item"><span class="nav-icon">🎮</span><span>Games</span></a>
+        <a href="search.html" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span></a>
+        <a href="chat.html" class="nav-item"><span class="nav-icon">💬</span><span>Chat</span></a>
+        <a href="account.html" class="nav-item active"><span class="nav-icon">👤</span><span>Account</span></a>
     </nav>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
     <script src="js/profile.js"></script>
 </body>
-</html>
+    </html>
