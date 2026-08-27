@@ -3,179 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEXA - Games Hub</title>
-    <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/vexa-brand.css">
+    <title>VEXA - Games</title>
     <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <style>
-        .games-container {
-            padding: 20px 0;
-        }
-        
-        .games-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-        }
-        
-        .games-title {
-            font-size: 28px;
-            font-weight: 700;
-        }
-        
-        .multiplayer-card {
-            background: linear-gradient(135deg, rgba(108, 60, 225, 0.2), rgba(0, 212, 255, 0.2));
-            border: 1px solid rgba(108, 60, 225, 0.5);
-            border-radius: var(--vexa-radius-lg);
-            padding: 20px;
-            margin-bottom: 24px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .multiplayer-card:hover {
-            box-shadow: 0 0 30px rgba(108, 60, 225, 0.5);
-            transform: translateY(-2px);
-        }
-        
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 16px;
-            padding: 16px 0;
-        }
-        
-        .game-card {
-            background: var(--vexa-glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-lg);
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: var(--text-primary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .game-card:hover {
-            border-color: var(--vexa-primary);
-            box-shadow: 0 8px 24px rgba(108, 60, 225, 0.4);
-            transform: translateY(-4px);
-        }
-        
-        .game-icon {
-            font-size: 48px;
-            margin-bottom: 8px;
-        }
-        
-        .game-name {
-            font-family: var(--vexa-font-secondary);
-            font-weight: 700;
-            font-size: 16px;
-        }
-        
-        .game-category {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .high-score {
-            font-size: 12px;
-            color: var(--vexa-secondary);
-            font-weight: 600;
-        }
-        
-        .play-btn {
-            width: 100%;
-            padding: 8px;
-            margin-top: 8px;
-            background: linear-gradient(135deg, var(--vexa-primary), var(--vexa-secondary));
-            border: none;
-            border-radius: var(--vexa-radius-md);
-            color: white;
-            font-family: var(--vexa-font-secondary);
-            font-weight: 700;
-            font-size: 12px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .play-btn:hover {
-            box-shadow: 0 0 20px rgba(108, 60, 225, 0.5);
-        }
-    </style>
 </head>
 <body>
-    <div class="vexa-bg-pattern"></div>
-    
-    <div class="container games-container">
-        <!-- Header -->
-        <header class="games-header">
-            <a href="home.html" class="vexa-logo">
-                <div class="vexa-logo-icon"></div>
-            </a>
-            <h1 class="vexa-title games-title">🎮 Games Hub</h1>
-        </header>
-        
-        <!-- Multiplayer Section -->
-        <div class="multiplayer-card" onclick="showMultiplayerComingSoon()">
-            <div style="font-size: 48px; margin-bottom: 8px;">👥</div>
-            <h3 class="vexa-heading" style="font-size: 20px; margin-bottom: 4px;">Multiplayer</h3>
-            <p style="color: var(--text-muted); margin-bottom: 8px;">Compete with friends in real-time</p>
-            <span style="display: inline-block; padding: 8px 16px; background: rgba(0, 212, 255, 0.2); border: 1px solid var(--vexa-secondary); border-radius: 20px; color: var(--vexa-secondary); font-weight: 700; font-size: 12px; letter-spacing: 1px;">
-                🚧 COMING SOON
-            </span>
+    <div class="container" style="padding:20px 16px;">
+        <!-- Logo -->
+        <div style="text-align:center;margin-bottom:8px;">
+            <a href="home.html" class="app-logo" style="font-size:28px;">VEXA</a>
         </div>
+        <h1 style="text-align:center;font-size:24px;font-weight:700;margin-bottom:4px;">VEXA</h1>
+        <p style="text-align:center;color:var(--accent-blue);font-size:16px;font-weight:600;letter-spacing:2px;margin-bottom:16px;">GAME HUB</p>
 
-        <!-- Games Grid -->
-        <div class="games-grid" id="games-grid"></div>
+        <!-- Popular Games -->
+        <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">🔥 POPULAR GAMES</h2>
+        <div id="popular-games" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px;"></div>
+
+        <!-- Categories -->
+        <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">📂 GAME CATEGORIES</h2>
+        
+        <div id="categories-list"></div>
+
+        <!-- Multiplayer - BOTTOM -->
+        <div class="card" style="margin-top:24px;text-align:center;padding:20px;">
+            <div style="font-size:32px;margin-bottom:8px;">👥</div>
+            <h3 style="font-size:16px;font-weight:700;">MULTIPLAYER</h3>
+            <p style="color:var(--text-muted);font-size:13px;margin-top:4px;">Coming Soon 🚧</p>
+        </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav vexa-nav">
-        <a href="home.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="games.html" class="nav-item vexa-nav-item active">
-            <span class="nav-icon">🎮</span>
-            <span>Games</span>
-        </a>
-        <a href="chat.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">💬</span>
-            <span>Chat</span>
-        </a>
-        <a href="account.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">👤</span>
-            <span>Account</span>
-        </a>
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
+        <a href="games.html" class="nav-item active"><span class="nav-icon">🎮</span><span>Games</span></a>
+        <a href="search.html" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span></a>
+        <a href="chat.html" class="nav-item"><span class="nav-icon">💬</span><span>Chat</span></a>
+        <a href="account.html" class="nav-item"><span class="nav-icon">👤</span><span>Account</span></a>
     </nav>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/games.js"></script>
+    <script>
+        auth.onAuthStateChanged(function(user) {
+            if (!user) { window.location.replace('login.html'); return; }
+            loadGames();
+        });
+        
+        async function loadGames() {
+            try {
+                var response = await fetch('data/games.json');
+                var games = await response.json();
+                
+                var freeGames = games.filter(function(g) { return g.type === 'free'; });
+                var popularContainer = document.getElementById('popular-games');
+                
+                popularContainer.innerHTML = games.slice(0, 4).map(function(game) {
+                    var btnText = game.type === 'luck' ? 'PLAY (' + game.entryCost + ' 🪙)' : 'PLAY FREE';
+                    return `
+                        <a href="games/${game.id}.html" style="text-decoration:none;color:inherit;">
+                            <div class="stat-card" style="text-align:center;padding:16px;">
+                                <div style="font-size:36px;">${game.icon}</div>
+                                <div style="font-weight:600;font-size:14px;margin-top:8px;">${game.name}</div>
+                                <div style="font-size:11px;color:var(--text-muted);margin:4px 0;">${game.category}</div>
+                                <button class="btn btn-primary btn-small" style="width:100%;margin-top:8px;">${btnText}</button>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+                
+                // Categories
+                var categories = {};
+                games.forEach(function(game) {
+                    if (!categories[game.category]) {
+                        categories[game.category] = [];
+                    }
+                    categories[game.category].push(game);
+                });
+                
+                var categoriesContainer = document.getElementById('categories-list');
+                
+                categoriesContainer.innerHTML = Object.entries(categories).map(function([category, categoryGames]) {
+                    return `
+                        <div style="margin-bottom:20px;">
+                            <h3 style="font-size:14px;font-weight:700;color:var(--accent-blue);margin-bottom:8px;">${category.toUpperCase()}</h3>
+                            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                                ${categoryGames.map(function(game) {
+                                    var btnText = game.type === 'luck' ? 'PLAY (' + game.entryCost + ' 🪙)' : 'PLAY FREE';
+                                    return `
+                                        <a href="games/${game.id}.html" style="text-decoration:none;color:inherit;">
+                                            <div class="stat-card" style="text-align:center;padding:12px;">
+                                                <div style="font-size:28px;">${game.icon}</div>
+                                                <div style="font-weight:600;font-size:13px;margin-top:4px;">${game.name}</div>
+                                                <button class="btn btn-primary btn-small" style="width:100%;margin-top:6px;font-size:10px;">${btnText}</button>
+                                            </div>
+                                        </a>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error loading games:', error);
+            }
+        }
+    </script>
 </body>
-</html>a
+</html>
