@@ -4,178 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Number Rush</title>
-    <link rel="icon" type="image/svg+xml" href="../assets/logo/vexa-icon.svg">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="../css/vexa-brand.css">
     <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/animations.css">
-    <style>
-        .game-container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-        }
-        
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 400px;
-            margin-bottom: 20px;
-        }
-        
-        .back-btn {
-            background: var(--vexa-glass);
-            border: 1px solid var(--vexa-glass-border);
-            color: var(--text-primary);
-            padding: 8px 16px;
-            border-radius: var(--vexa-radius-md);
-            cursor: pointer;
-            text-decoration: none;
-            font-family: var(--vexa-font-secondary);
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .question-display {
-            width: 100%;
-            max-width: 400px;
-            background: var(--vexa-glass);
-            border: 2px solid var(--vexa-primary);
-            border-radius: var(--vexa-radius-lg);
-            padding: 40px;
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .question-text {
-            font-size: 48px;
-            font-weight: 700;
-            font-family: var(--vexa-font-primary);
-            color: var(--vexa-secondary);
-        }
-        
-        .timer-display {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--vexa-gold);
-            margin: 16px 0;
-            font-family: var(--vexa-font-primary);
-        }
-        
-        .answers-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            width: 100%;
-            max-width: 400px;
-            margin: 20px 0;
-        }
-        
-        .answer-btn {
-            padding: 20px;
-            background: var(--vexa-glass);
-            border: 2px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-md);
-            color: var(--text-primary);
-            font-size: 24px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: var(--vexa-font-secondary);
-        }
-        
-        .answer-btn:hover {
-            border-color: var(--vexa-primary);
-            box-shadow: 0 0 20px rgba(108, 60, 225, 0.4);
-            transform: scale(1.05);
-        }
-        
-        .game-stats {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin: 20px 0;
-            width: 100%;
-            max-width: 400px;
-        }
-        
-        .stat-box {
-            background: var(--vexa-glass);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-md);
-            padding: 12px;
-            flex: 1;
-            text-align: center;
-        }
-        
-        .stat-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: var(--vexa-font-secondary);
-            font-weight: 600;
-        }
-        
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--vexa-secondary);
-            font-family: var(--vexa-font-primary);
-        }
-        
-        .result-text {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 16px 0;
-            min-height: 30px;
-        }
-    </style>
 </head>
 <body>
-    <div class="vexa-bg-pattern"></div>
-    
-    <div class="game-container">
-        <div class="game-header">
-            <a href="../games.html" class="back-btn">← Back</a>
-            <h1 class="vexa-title" style="font-size: 24px;">🔢 Number Rush</h1>
+    <div class="app-header">
+        <a href="../games.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
+        <span style="font-weight:600;">🔢 Number Rush</span>
+        <span></span>
+    </div>
+
+    <div style="max-width:400px;margin:0 auto;padding:16px;text-align:center;">
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="stat-card"><div class="stat-value" id="score">0</div><div class="stat-label">Score</div></div>
+            <div class="stat-card"><div class="stat-value" id="time">30s</div><div class="stat-label">Time</div></div>
+            <div class="stat-card"><div class="stat-value" id="best">0</div><div class="stat-label">Best</div></div>
         </div>
-        
-        <div class="game-stats">
-            <div class="stat-box">
-                <div class="stat-label">Score</div>
-                <div class="stat-value" id="score">0</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Best</div>
-                <div class="stat-value" id="best">0</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Coins</div>
-                <div class="stat-value" id="coins">0</div>
-            </div>
+
+        <div class="card" style="margin:16px 0;padding:24px;">
+            <div style="font-size:36px;font-weight:700;" id="question">5 + 3 = ?</div>
         </div>
-        
-        <div class="question-display">
-            <div class="question-text" id="question">5 + 3</div>
-            <div class="timer-display" id="timer">10s</div>
-        </div>
-        
-        <div class="answers-grid" id="answers-grid"></div>
-        
-        <div class="result-text" id="result"></div>
-        
-        <button class="btn btn-primary" onclick="startGame()">START GAME</button>
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;" id="answers-grid"></div>
+
+        <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="startGame()">START GAME</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
@@ -185,194 +36,101 @@
     <script src="../js/utils.js"></script>
     <script>
         let currentUser = null;
-        let score = 0;
-        let bestScore = 0;
-        let coins = 0;
-        let timer = null;
-        let timeLeft = 10;
-        let correctAnswer = null;
-        let gameActive = false;
-        
-        auth.onAuthStateChanged(async (user) => {
-            if (!user) {
-                window.location.href = '../login.html';
-                return;
-            }
+        let score = 0, timeLeft = 30, bestScore = 0;
+        let correctAnswer = null, gameActive = false, timerInterval = null;
+
+        auth.onAuthStateChanged(async function(user) {
+            if (!user) { window.location.replace('../login.html'); return; }
             currentUser = user;
-            await loadUserData();
+            var snapshot = await database.ref('gameStats/' + user.uid + '/number-rush').once('value');
+            var stats = snapshot.val();
+            if (stats) { bestScore = stats.highScore || 0; document.getElementById('best').textContent = bestScore; }
         });
-        
-        async function loadUserData() {
-            const progressSnapshot = await database.ref(`usersProgress/${currentUser.uid}`).once('value');
-            const progressData = progressSnapshot.val();
-            coins = progressData.coins;
-            document.getElementById('coins').textContent = coins;
-            
-            const statsSnapshot = await database.ref(`gameStats/${currentUser.uid}/number_rush`).once('value');
-            const stats = statsSnapshot.val();
-            if (stats) {
-                bestScore = stats.highScore || 0;
-                document.getElementById('best').textContent = bestScore;
-            }
-        }
-        
+
         function startGame() {
-            gameActive = true;
-            score = 0;
+            score = 0; timeLeft = 30; gameActive = true;
             document.getElementById('score').textContent = score;
-            document.getElementById('result').textContent = '';
+            clearInterval(timerInterval);
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                document.getElementById('time').textContent = timeLeft + 's';
+                if (timeLeft <= 0) endGame();
+            }, 1000);
             generateQuestion();
-            startTimer();
         }
-        
+
         function generateQuestion() {
-            const num1 = Math.floor(Math.random() * 20) + 1;
-            const num2 = Math.floor(Math.random() * 20) + 1;
-            const operations = ['+', '-', '×'];
-            const operation = operations[Math.floor(Math.random() * operations.length)];
-            
-            let answer;
-            let questionText;
-            
-            switch(operation) {
-                case '+':
-                    answer = num1 + num2;
-                    questionText = `${num1} + ${num2}`;
-                    break;
-                case '-':
-                    answer = Math.max(num1, num2) - Math.min(num1, num2);
-                    questionText = `${Math.max(num1, num2)} - ${Math.min(num1, num2)}`;
-                    break;
-                case '×':
-                    answer = num1 * num2;
-                    questionText = `${num1} × ${num2}`;
-                    break;
-            }
-            
-            correctAnswer = answer;
-            document.getElementById('question').textContent = questionText;
-            
-            // Generate wrong answers
-            const answers = [answer];
-            while (answers.length < 4) {
-                const wrongAnswer = answer + (Math.floor(Math.random() * 10) - 5);
-                if (wrongAnswer !== answer && wrongAnswer >= 0 && !answers.includes(wrongAnswer)) {
-                    answers.push(wrongAnswer);
-                }
-            }
-            
-            answers.sort(() => Math.random() - 0.5);
-            
-            const answersGrid = document.getElementById('answers-grid');
-            answersGrid.innerHTML = '';
-            
-            answers.forEach(ans => {
-                const btn = document.createElement('button');
-                btn.className = 'answer-btn';
-                btn.textContent = ans;
-                btn.onclick = () => checkAnswer(ans);
-                answersGrid.appendChild(btn);
-            });
-            
-            resetTimer();
-        }
-        
-        function startTimer() {
-            clearInterval(timer);
-            timeLeft = 10;
-            updateTimerDisplay();
-            
-            timer = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    endGame();
-                }
-            }, 1000);
-        }
-        
-        function resetTimer() {
-            clearInterval(timer);
-            timeLeft = 10;
-            updateTimerDisplay();
-            
-            timer = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    endGame();
-                }
-            }, 1000);
-        }
-        
-        function updateTimerDisplay() {
-            document.getElementById('timer').textContent = `${timeLeft}s`;
-            if (timeLeft <= 3) {
-                document.getElementById('timer').style.color = '#ef4444';
-            } else {
-                document.getElementById('timer').style.color = '#FFD700';
-            }
-        }
-        
-        function checkAnswer(answer) {
             if (!gameActive) return;
+            var num1 = Math.floor(Math.random() * 20) + 1;
+            var num2 = Math.floor(Math.random() * 20) + 1;
+            var op = ['+', '-', '×'][Math.floor(Math.random() * 3)];
             
-            if (answer === correctAnswer) {
-                score += 10;
-                document.getElementById('score').textContent = score;
-                document.getElementById('result').textContent = '✓ Correct! +10 points';
-                document.getElementById('result').style.color = '#10b981';
-                
-                if (score > bestScore) {
-                    bestScore = score;
-                    document.getElementById('best').textContent = bestScore;
-                }
-                
-                generateQuestion();
-            } else {
-                document.getElementById('result').textContent = '✗ Wrong!';
-                document.getElementById('result').style.color = '#ef4444';
-                endGame();
+            if (op === '+') correctAnswer = num1 + num2;
+            else if (op === '-') { var max = Math.max(num1, num2); var min = Math.min(num1, num2); correctAnswer = max - min; num1 = max; num2 = min; }
+            else correctAnswer = num1 * num2;
+            
+            document.getElementById('question').textContent = num1 + ' ' + op + ' ' + num2 + ' = ?';
+            
+            var answers = [correctAnswer];
+            while (answers.length < 4) {
+                var wrong = correctAnswer + Math.floor(Math.random() * 10) - 5;
+                if (wrong !== correctAnswer && wrong >= 0 && !answers.includes(wrong)) answers.push(wrong);
             }
+            answers.sort(function() { return Math.random() - 0.5; });
+            
+            var grid = document.getElementById('answers-grid');
+            grid.innerHTML = answers.map(function(ans) {
+                return '<button class="btn btn-secondary" onclick="checkAnswer(' + ans + ')" style="padding:20px;font-size:20px;">' + ans + '</button>';
+            }).join('');
         }
-        
-        async function endGame() {
+
+        function checkAnswer(ans) {
+            if (!gameActive) return;
+            if (ans === correctAnswer) { score += 10; document.getElementById('score').textContent = score; generateQuestion(); }
+            else { endGame(); }
+        }
+
+        function endGame() {
             gameActive = false;
-            clearInterval(timer);
-            
-            const earnedCoins = Math.floor(score / 2);
-            coins += earnedCoins;
-            document.getElementById('coins').textContent = coins;
-            
-            document.getElementById('result').textContent = `Game Over! Score: ${score}. Earned ${earnedCoins} coins!`;
-            document.getElementById('result').style.color = '#00D4FF';
-            
-            await database.ref(`usersProgress/${currentUser.uid}`).update({
-                coins: coins
-            });
-            
-            const statsRef = database.ref(`gameStats/${currentUser.uid}/number_rush`);
-            await statsRef.update({
-                gamesPlayed: firebase.database.ServerValue.increment(1),
-                highScore: bestScore
-            });
-            
-            if (score > 0) {
-                await awardXP(Math.floor(score / 5));
-            }
+            clearInterval(timerInterval);
+            if (score > bestScore) { bestScore = score; document.getElementById('best').textContent = bestScore; }
+            var xpEarned = Math.floor(score / 2);
+            var coinsEarned = Math.floor(score / 4);
+            showGameEnd(score, xpEarned, coinsEarned);
         }
-        
-        async function awardXP(xpAmount) {
-            const progressRef = database.ref(`usersProgress/${currentUser.uid}`);
-            const snapshot = await progressRef.once('value');
-            const data = snapshot.val();
-            await progressRef.update({
-                totalXP: data.totalXP + xpAmount
-            });
+
+        function showGameEnd(score, xpEarned, coinsEarned) {
+            var overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            overlay.innerHTML = `
+                <div style="background:var(--bg-card);border:2px solid var(--accent-purple);border-radius:20px;padding:30px;text-align:center;max-width:320px;width:100%;">
+                    <div style="font-size:48px;">🔢</div>
+                    <h2 style="font-size:22px;margin:8px 0;">Score: ${score}</h2>
+                    <div style="display:flex;gap:10px;margin:16px 0;">
+                        <div style="background:var(--bg-primary);padding:12px;border-radius:10px;flex:1;">
+                            <div style="font-size:20px;font-weight:700;color:var(--accent-blue);">+${xpEarned}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">⭐ XP</div>
+                        </div>
+                        <div style="background:var(--bg-primary);padding:12px;border-radius:10px;flex:1;">
+                            <div style="font-size:20px;font-weight:700;color:#FFD700;">+${coinsEarned}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">🪙 Coins</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;margin-bottom:8px;" onclick="claimReward(${xpEarned},${coinsEarned},${score})">CLAIM</button>
+                    <button class="btn btn-secondary" style="width:100%;" onclick="window.location.replace('../games.html')">GAMES HUB</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        async function claimReward(xpEarned, coinsEarned, score) {
+            var progressRef = database.ref('progress/' + currentUser.uid);
+            var snapshot = await progressRef.once('value');
+            var progress = snapshot.val() || { coins: 0, xp: 0 };
+            await progressRef.update({ xp: progress.xp + xpEarned, coins: progress.coins + coinsEarned });
+            await database.ref('gameStats/' + currentUser.uid + '/number-rush').update({ gamesPlayed: firebase.database.ServerValue.increment(1), highScore: bestScore });
+            Utils.showToast('Reward claimed!', 'success');
+            setTimeout(function() { window.location.replace('../games.html'); }, 1000);
         }
     </script>
 </body>
