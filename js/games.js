@@ -1,72 +1,40 @@
-// Games Hub logic for VEXA
-
-class GamesManager {
-    constructor() {
-        this.currentUser = null;
-        this.gamesData = [];
+auth.onAuthStateChanged(function(user) {
+    if (!user) {
+        window.location.replace('login.html');
+        return;
     }
+    loadGames();
+});
 
-    async init() {
-        authManager.init();
+async function loadGames() {
+    var container = document.getElementById('games-grid');
+    
+    try {
+        var response = await fetch('data/games.json');
+        var games = await response.json();
         
-        authManager.onAuthStateChange(async (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-                return;
-            }
+        container.innerHTML = games.map(function(game) {
+            var buttonText = game.type === 'luck' ? 'PLAY (' + game.entryCost + ' 🪙)' : 'PLAY FREE';
+            var buttonClass = game.type === 'luck' ? 'btn-secondary' : 'btn-primary';
             
-            this.currentUser = user;
-            await this.loadGames();
-            this.renderGames();
-        });
-    }
-
-    async loadGames() {
-        try {
-            const response = await fetch('data/games.json');
-            this.gamesData = await response.json();
-        } catch (error) {
-            console.error('Error loading games:', error);
-            ChronoUtils.showToast('Failed to load games', 'error');
-        }
-    }
-
-    renderGames() {
-        const container = document.getElementById('games-grid');
+            return `
+                <a href="games/${game.id}.html" style="text-decoration:none;color:inherit;">
+                    <div class="stat-card" style="text-align:center;padding:16px;height:100%;">
+                        <div style="font-size:36px;margin-bottom:8px;">${game.icon}</div>
+                        <div style="font-weight:600;font-size:14px;">${game.name}</div>
+                        <div style="font-size:11px;color:var(--text-muted);margin:4px 0;">${game.category}</div>
+                        <button class="btn ${buttonClass} btn-small" style="width:100%;margin-top:8px;">${buttonText}</button>
+                    </div>
+                </a>
+            `;
+        }).join('');
         
-        container.innerHTML = this.gamesData.map(game => `
-            <a href="games/${game.id}.html" class="game-card">
-                <div class="game-icon">${game.icon}</div>
-                <div class="game-name">${game.name}</div>
-                <div class="game-category">${game.category}</div>
-                <div class="high-score" id="score-${game.id}">High Score: --</div>
-                <button class="play-btn">PLAY</button>
-            </a>
-        `).join('');
-        
-        this.gamesData.forEach(game => {
-            this.loadHighScore(game.id);
-        });
-    }
-
-    async loadHighScore(gameId) {
-        try {
-            const scoreSnapshot = await database.ref(`gameStats/${this.currentUser.uid}/${gameId}/highScore`).once('value');
-            const score = scoreSnapshot.val() || 0;
-            const element = document.getElementById(`score-${gameId}`);
-            if (element) {
-                element.textContent = `High Score: ${score}`;
-            }
-        } catch (error) {
-            console.error(`Error loading high score for ${gameId}:`, error);
-        }
+    } catch (error) {
+        console.error('Error loading games:', error);
+        container.innerHTML = '<p style="color:var(--text-muted);">Failed to load games</p>';
     }
 }
 
-function showMultiplayerComingSoon() {
-    ChronoUtils.showToast('🚧 Multiplayer Coming Soon! Realtime battles under development.', 'info');
+function showMultiplayer() {
+    Utils.showToast('🚧 Multiplayer Coming Soon - Realtime battles under development!');
 }
-
-const gamesManager = new GamesManager();
-window.gamesManager = gamesManager;
-document.addEventListener('DOMContentLoaded', () => gamesManager.init());
