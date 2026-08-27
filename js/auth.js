@@ -271,4 +271,4 @@ class AuthManager {
 }
 
 const authManager = new AuthManager();
-window.authManager = authManager;
+window.authManager = authManager;2
