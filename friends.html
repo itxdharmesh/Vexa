@@ -17,19 +17,25 @@
         <!-- Friend Requests -->
         <div class="card">
             <h3 style="font-size:16px;margin-bottom:12px;">Friend Requests</h3>
-            <div id="friend-requests"></div>
+            <div id="friend-requests">
+                <p style="color:var(--text-muted);font-size:13px;">Loading...</p>
+            </div>
         </div>
         
         <!-- My Friends -->
         <div class="card">
             <h3 style="font-size:16px;margin-bottom:12px;">My Friends</h3>
-            <div id="friends-list"></div>
+            <div id="friends-list">
+                <p style="color:var(--text-muted);font-size:13px;">Loading...</p>
+            </div>
         </div>
         
         <!-- Suggested -->
         <div class="card">
             <h3 style="font-size:16px;margin-bottom:12px;">Suggested People</h3>
-            <div id="suggested-people"></div>
+            <div id="suggested-people">
+                <p style="color:var(--text-muted);font-size:13px;">Loading...</p>
+            </div>
         </div>
     </div>
 
@@ -38,15 +44,242 @@
         <a href="games.html" class="nav-item"><span class="nav-icon">🎮</span><span>Games</span></a>
         <a href="search.html" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span></a>
         <a href="chat.html" class="nav-item"><span class="nav-icon">💬</span><span>Chat</span></a>
-        <a href="account.html" class="nav-item"><span class="nav-icon">👤</span><span>Account</span></a>
+        <a href="account.html" class="nav-item active"><span class="nav-icon">👤</span><span>Account</span></a>
     </nav>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/friends.js"></script>
+    <script>
+        let currentUser = null;
+        let friendsList = [];
+
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                window.location.replace('login.html');
+                return;
+            }
+            currentUser = user;
+            loadFriendRequests();
+            loadFriends();
+            loadSuggestions();
+        });
+
+        async function loadFriendRequests() {
+            var container = document.getElementById('friend-requests');
+            
+            try {
+                var snapshot = await database.ref('friendRequests/' + currentUser.uid).once('value');
+                var requests = snapshot.val() || {};
+                
+                var pending = Object.entries(requests).filter(function([id, req]) {
+                    return req.status === 'pending';
+                });
+                
+                if (pending.length === 0) {
+                    container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;">No pending requests</p>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                for (var [requestId, request] of pending) {
+                    var userSnapshot = await database.ref('users/' + request.from).once('value');
+                    var userData = userSnapshot.val() || {};
+                    
+                    var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
+                    
+                    var div = document.createElement('div');
+                    div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);';
+                    div.innerHTML = `
+                        <div class="avatar">${avatarText}</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600;font-size:14px;">${userData.displayName || 'User'}</div>
+                            <div style="font-size:12px;color:var(--text-muted);">@${userData.username || 'user'}</div>
+                        </div>
+                        <button class="btn btn-success btn-small" onclick="acceptRequest('${request.from}')">Accept</button>
+                        <button class="btn btn-danger btn-small" onclick="rejectRequest('${request.from}')">Reject</button>
+                    `;
+                    container.appendChild(div);
+                }
+                
+            } catch (error) {
+                container.innerHTML = '<p style="color:var(--danger);font-size:13px;text-align:center;">Failed to load</p>';
+            }
+        }
+
+        async function loadFriends() {
+            var container = document.getElementById('friends-list');
+            
+            try {
+                var snapshot = await database.ref('friends/' + currentUser.uid).once('value');
+                var friends = snapshot.val() || {};
+                
+                friendsList = Object.keys(friends);
+                
+                if (friendsList.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <div class="empty-state-title">No friends yet</div>
+                            <div class="empty-state-text">Search for people and add them!</div>
+                            <a href="search.html" class="btn btn-primary btn-small">SEARCH PEOPLE</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                for (var friendId of friendsList) {
+                    var userSnapshot = await database.ref('users/' + friendId).once('value');
+                    var userData = userSnapshot.val() || {};
+                    
+                    var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
+                    
+                    var div = document.createElement('div');
+                    div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);';
+                    div.innerHTML = `
+                        <div class="avatar" onclick="viewProfile('${friendId}')" style="cursor:pointer;">${avatarText}</div>
+                        <div style="flex:1;" onclick="viewProfile('${friendId}')" style="cursor:pointer;">
+                            <div style="font-weight:600;font-size:14px;">${userData.displayName || 'User'}</div>
+                            <div style="font-size:12px;color:var(--text-muted);">@${userData.username || 'user'}</div>
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="messageFriend('${friendId}', '${userData.displayName || 'User'}')">Message</button>
+                        <button class="btn btn-danger btn-small" onclick="removeFriend('${friendId}')">Remove</button>
+                    `;
+                    container.appendChild(div);
+                }
+                
+            } catch (error) {
+                container.innerHTML = '<p style="color:var(--danger);font-size:13px;text-align:center;">Failed to load</p>';
+            }
+        }
+
+        async function loadSuggestions() {
+            var container = document.getElementById('suggested-people');
+            
+            try {
+                var usersSnapshot = await database.ref('users').once('value');
+                var users = usersSnapshot.val() || {};
+                
+                var suggestions = [];
+                
+                Object.entries(users).forEach(function([userId, userData]) {
+                    if (userId === currentUser.uid) return;
+                    if (friendsList.includes(userId)) return;
+                    if (suggestions.length < 5) {
+                        suggestions.push({ userId: userId, ...userData });
+                    }
+                });
+                
+                if (suggestions.length === 0) {
+                    container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;">No suggestions</p>';
+                    return;
+                }
+                
+                container.innerHTML = suggestions.map(function(user) {
+                    var avatarText = (user.displayName || '?').charAt(0).toUpperCase();
+                    return `
+                        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+                            <div class="avatar">${avatarText}</div>
+                            <div style="flex:1;">
+                                <div style="font-weight:600;font-size:14px;">${user.displayName || 'User'}</div>
+                                <div style="font-size:12px;color:var(--text-muted);">@${user.username || 'user'}</div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="sendRequest('${user.userId}')">Add</button>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                container.innerHTML = '<p style="color:var(--danger);font-size:13px;text-align:center;">Failed to load</p>';
+            }
+        }
+
+        async function acceptRequest(fromUserId) {
+            try {
+                await database.ref('friends/' + currentUser.uid + '/' + fromUserId).set(true);
+                await database.ref('friends/' + fromUserId + '/' + currentUser.uid).set(true);
+                await database.ref('friendRequests/' + currentUser.uid + '/' + fromUserId).remove();
+                
+                // Add notification
+                await database.ref('notifications/' + fromUserId).push({
+                    type: 'friend_accepted',
+                    text: 'Your friend request was accepted!',
+                    read: false,
+                    createdAt: Date.now()
+                });
+                
+                Utils.showToast('Friend added!', 'success');
+                loadFriendRequests();
+                loadFriends();
+                loadSuggestions();
+                
+            } catch (error) {
+                console.error('Accept error:', error);
+            }
+        }
+
+        async function rejectRequest(fromUserId) {
+            try {
+                await database.ref('friendRequests/' + currentUser.uid + '/' + fromUserId).remove();
+                Utils.showToast('Request rejected', 'info');
+                loadFriendRequests();
+            } catch (error) {
+                console.error('Reject error:', error);
+            }
+        }
+
+        async function removeFriend(friendId) {
+            if (!confirm('Remove this friend?')) return;
+            
+            try {
+                await database.ref('friends/' + currentUser.uid + '/' + friendId).remove();
+                await database.ref('friends/' + friendId + '/' + currentUser.uid).remove();
+                Utils.showToast('Friend removed', 'info');
+                loadFriends();
+                loadSuggestions();
+            } catch (error) {
+                console.error('Remove error:', error);
+            }
+        }
+
+        function messageFriend(friendId, displayName) {
+            sessionStorage.setItem('chatUserId', friendId);
+            sessionStorage.setItem('chatUserName', displayName);
+            window.location.href = 'chat-window.html';
+        }
+
+        function viewProfile(userId) {
+            window.location.href = 'user-profile.html?uid=' + userId;
+        }
+
+        async function sendRequest(userId) {
+            try {
+                await database.ref('friendRequests/' + userId + '/' + currentUser.uid).set({
+                    from: currentUser.uid,
+                    to: userId,
+                    status: 'pending',
+                    createdAt: Date.now()
+                });
+                
+                // Notification
+                await database.ref('notifications/' + userId).push({
+                    type: 'friend_request',
+                    text: 'You received a friend request!',
+                    read: false,
+                    createdAt: Date.now()
+                });
+                
+                Utils.showToast('Friend request sent!', 'success');
+                loadSuggestions();
+            } catch (error) {
+                console.error('Send request error:', error);
+            }
+        }
+    </script>
 </body>
-</html>
+    </html>
