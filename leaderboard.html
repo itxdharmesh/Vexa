@@ -4,273 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Leaderboard</title>
-    <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/vexa-brand.css">
     <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <style>
-        .leaderboard-container {
-            padding: 20px 0;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .leaderboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-        }
-        
-        .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin: 20px 0;
-        }
-        
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px;
-            background: var(--vexa-glass);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-md);
-            transition: all 0.3s ease;
-        }
-        
-        .leaderboard-item:hover {
-            border-color: var(--vexa-primary);
-            box-shadow: 0 0 15px rgba(108, 60, 225, 0.3);
-        }
-        
-        .leaderboard-rank {
-            font-size: 24px;
-            font-weight: 700;
-            width: 40px;
-            text-align: center;
-            font-family: var(--vexa-font-primary);
-        }
-        
-        .rank-1 { color: #FFD700; }
-        .rank-2 { color: #C0C0C0; }
-        .rank-3 { color: #CD7F32; }
-        
-        .leaderboard-info {
-            flex: 1;
-        }
-        
-        .leaderboard-name {
-            font-weight: 600;
-            font-family: var(--vexa-font-secondary);
-        }
-        
-        .leaderboard-username {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        .leaderboard-xp {
-            color: var(--vexa-secondary);
-            font-weight: 700;
-            font-family: var(--vexa-font-primary);
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin: 20px 0;
-        }
-        
-        .tab-btn {
-            flex: 1;
-            padding: 12px;
-            background: var(--vexa-glass);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-md);
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: var(--vexa-font-secondary);
-            font-weight: 600;
-        }
-        
-        .tab-btn.active {
-            background: linear-gradient(135deg, var(--vexa-primary), var(--vexa-secondary));
-            border-color: var(--vexa-primary);
-            color: white;
-        }
-    </style>
 </head>
 <body>
-    <div class="vexa-bg-pattern"></div>
-    
-    <div class="container leaderboard-container">
-        <header class="leaderboard-header">
-            <a href="home.html" class="vexa-logo">
-                <div class="vexa-logo-icon"></div>
-            </a>
-            <h1 class="vexa-title" style="font-size: 24px;">🥇 Leaderboard</h1>
-        </header>
-        
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('global')">Global</button>
-            <button class="tab-btn" onclick="switchTab('games')">Games</button>
-        </div>
-        
-        <div class="leaderboard-list" id="leaderboard-list"></div>
+    <div class="app-header">
+        <a href="account.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
+        <span style="font-weight:600;">🥇 Leaderboard</span>
+        <span></span>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav vexa-nav">
-        <a href="home.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="games.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">🎮</span>
-            <span>Games</span>
-        </a>
-        <a href="chat.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">💬</span>
-            <span>Chat</span>
-        </a>
-        <a href="account.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">👤</span>
-            <span>Account</span>
-        </a>
-    </nav>
+    <div class="container">
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <button class="btn btn-primary btn-small" id="tab-global" onclick="switchTab('global')">GLOBAL</button>
+            <button class="btn btn-secondary btn-small" id="tab-friends" onclick="switchTab('friends')">FRIENDS</button>
+        </div>
+
+        <div id="leaderboard-list"></div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
     <script>
+        let currentUser = null;
         let currentTab = 'global';
         
-        authManager.init();
-        authManager.onAuthStateChange((user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-                return;
-            }
+        auth.onAuthStateChanged(function(user) {
+            if (!user) { window.location.replace('login.html'); return; }
+            currentUser = user;
             loadLeaderboard();
         });
         
         function switchTab(tab) {
             currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if (tab === 'global') {
+                document.getElementById('tab-global').className = 'btn btn-primary btn-small';
+                document.getElementById('tab-friends').className = 'btn btn-secondary btn-small';
+            } else {
+                document.getElementById('tab-global').className = 'btn btn-secondary btn-small';
+                document.getElementById('tab-friends').className = 'btn btn-primary btn-small';
+            }
             loadLeaderboard();
         }
         
         async function loadLeaderboard() {
-            const leaderboardList = document.getElementById('leaderboard-list');
-            leaderboardList.innerHTML = '<div class="spinner"></div>';
+            var list = document.getElementById('leaderboard-list');
+            list.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Loading...</p>';
             
-            if (currentTab === 'global') {
-                await loadGlobalLeaderboard();
-            } else {
-                await loadGameLeaderboard();
-            }
-        }
-        
-        async function loadGlobalLeaderboard() {
-            const snapshot = await database.ref('usersProgress').orderByChild('totalXP').limitToLast(50).once('value');
-            const players = [];
-            
-            snapshot.forEach((childSnapshot) => {
-                players.push({
-                    userId: childSnapshot.key,
-                    ...childSnapshot.val()
-                });
-            });
-            
-            players.reverse();
-            
-            const leaderboardList = document.getElementById('leaderboard-list');
-            leaderboardList.innerHTML = '';
-            
-            for (let i = 0; i < Math.min(players.length, 20); i++) {
-                const player = players[i];
-                const userSnapshot = await database.ref(`users/${player.userId}`).once('value');
-                const userData = userSnapshot.val();
+            try {
+                var progressSnapshot = await database.ref('progress').orderByChild('xp').limitToLast(50).once('value');
+                var players = [];
                 
-                const item = document.createElement('div');
-                item.className = 'leaderboard-item';
-                item.innerHTML = `
-                    <div class="leaderboard-rank rank-${i + 1}">${i + 1}</div>
-                    <div class="avatar">${userData.displayName ? userData.displayName[0].toUpperCase() : '?'}</div>
-                    <div class="leaderboard-info">
-                        <div class="leaderboard-name">${userData.displayName || userData.username}</div>
-                        <div class="leaderboard-username">@${userData.username}</div>
-                    </div>
-                    <div class="leaderboard-xp">⭐ ${ChronoUtils.formatNumber(player.totalXP)}</div>
-                `;
-                leaderboardList.appendChild(item);
-            }
-        }
-        
-        async function loadGameLeaderboard() {
-            const gamesResponse = await fetch('data/games.json');
-            const games = await gamesResponse.json();
-            
-            const leaderboardList = document.getElementById('leaderboard-list');
-            leaderboardList.innerHTML = '';
-            
-            for (const game of games) {
-                const statsSnapshot = await database.ref(`gameStats`).orderByChild(`${game.id}/highScore`).limitToLast(10).once('value');
-                const topPlayers = [];
-                
-                statsSnapshot.forEach((childSnapshot) => {
-                    const gameStats = childSnapshot.val()[game.id];
-                    if (gameStats && gameStats.highScore > 0) {
-                        topPlayers.push({
-                            userId: childSnapshot.key,
-                            highScore: gameStats.highScore
-                        });
-                    }
+                progressSnapshot.forEach(function(child) {
+                    players.push({ userId: child.key, ...child.val() });
                 });
                 
-                topPlayers.sort((a, b) => b.highScore - a.highScore);
+                players.reverse();
                 
-                if (topPlayers.length > 0) {
-                    const gameHeader = document.createElement('div');
-                    gameHeader.style.cssText = 'margin: 20px 0 8px; font-weight: 700; font-family: var(--vexa-font-secondary); font-size: 18px;';
-                    gameHeader.textContent = `${game.icon} ${game.name}`;
-                    leaderboardList.appendChild(gameHeader);
-                    
-                    for (let i = 0; i < Math.min(topPlayers.length, 3); i++) {
-                        const player = topPlayers[i];
-                        const userSnapshot = await database.ref(`users/${player.userId}`).once('value');
-                        const userData = userSnapshot.val();
-                        
-                        const item = document.createElement('div');
-                        item.className = 'leaderboard-item';
-                        item.innerHTML = `
-                            <div class="leaderboard-rank rank-${i + 1}">${i + 1}</div>
-                            <div class="avatar">${userData.displayName ? userData.displayName[0].toUpperCase() : '?'}</div>
-                            <div class="leaderboard-info">
-                                <div class="leaderboard-name">${userData.displayName || userData.username}</div>
-                                <div class="leaderboard-username">@${userData.username}</div>
-                            </div>
-                            <div class="leaderboard-xp">Score: ${player.highScore}</div>
-                        `;
-                        leaderboardList.appendChild(item);
-                    }
+                if (currentTab === 'friends') {
+                    var friendsSnapshot = await database.ref('friends/' + currentUser.uid).once('value');
+                    var friends = friendsSnapshot.val() || {};
+                    players = players.filter(function(p) { return friends[p.userId]; });
                 }
-            }
-        }
-    </script>
-</body>
-  </html>
+                
+                if (players.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><div class="empty-state-title">No players found</div></div>';
+                    return;
+                }
+                
+                list.innerHTML = '';
+                
+                for (var i = 0; i < Math.min(players.length, 20); i++) {
+                    var player = players[i];
+                    var userSnapshot = await database.ref('users/' + player.userId).once('value');
+                    var userData = userSnapshot.val() || {};
+                    
+                    var rankClass = i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'var(--text-muted)';
+                    var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
+                    
+                    var div = document.createElement('div');
+                    div.className = 'card';
+                    div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:8px;';
+                    div.innerHTML = `
+                        <span style="font-size:20px;font-weight:700;color:${rankClass};width:30px;">${i + 1}</span>
+                        <div class="avatar">${avatarText}</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600;font-size:14px;">${userData.displayName || 'User'}</div>
+                            <div style="font-size:12px;
