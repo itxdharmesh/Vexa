@@ -1,195 +1,140 @@
-// Chat system logic for VEXA
+let currentUser = null;
+let conversations = [];
 
-class ChatManager {
-    constructor() {
-        this.currentUser = null;
-        this.activeChat = null;
-        this.messageListeners = {};
-        this.chatListeners = {};
+auth.onAuthStateChanged(function(user) {
+    if (!user) {
+        window.location.replace('login.html');
+        return;
     }
+    currentUser = user;
+    loadConversations();
+});
 
-    async init() {
-        authManager.init();
+async function loadConversations() {
+    var list = document.getElementById('conversation-list');
+    var emptyState = document.getElementById('empty-chat');
+    
+    try {
+        // Get all chats where current user is participant
+        var chatsSnapshot = await database.ref('chats').once('value');
+        var chats = chatsSnapshot.val() || {};
         
-        authManager.onAuthStateChange(async (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            this.currentUser = user;
-            this.loadChatList();
-        });
-    }
-
-    async loadChatList() {
-        const usersSnapshot = await database.ref('users').once('value');
-        const users = usersSnapshot.val();
+        conversations = [];
         
-        const chatList = document.getElementById('chat-list');
-        chatList.innerHTML = '';
-        
-        Object.entries(users).forEach(([userId, userData]) => {
-            if (userId === this.currentUser.uid) return;
-            
-            const chatItem = document.createElement('div');
-            chatItem.className = 'chat-list-item';
-            chatItem.innerHTML = `
-                <div class="avatar">${userData.displayName ? userData.displayName[0].toUpperCase() : '?'}</div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-family: 'Rajdhani', sans-serif;">${userData.displayName || userData.username}</div>
-                    <div style="font-size: 12px; color: var(--text-muted);">@${userData.username}</div>
-                </div>
-                <div id="presence-${userId}">
-                    <span class="online-indicator offline"></span>
-                </div>
-            `;
-            chatItem.onclick = () => this.openChat(userId, userData);
-            chatList.appendChild(chatItem);
-            
-            this.loadPresence(userId);
-        });
-    }
-
-    async loadPresence(userId) {
-        const presenceRef = database.ref(`presence/${userId}`);
-        presenceRef.on('value', (snapshot) => {
-            const presence = snapshot.val();
-            const presenceElement = document.getElementById(`presence-${userId}`);
-            if (presenceElement) {
-                const indicator = presenceElement.querySelector('.online-indicator');
-                if (presence && presence.online) {
-                    indicator.className = 'online-indicator online';
-                } else {
-                    indicator.className = 'online-indicator offline';
+        for (var chatId in chats) {
+            var chat = chats[chatId];
+            if (chat.participants && chat.participants[currentUser.uid]) {
+                var otherUserId = null;
+                for (var uid in chat.participants) {
+                    if (uid !== currentUser.uid) {
+                        otherUserId = uid;
+                        break;
+                    }
+                }
+                
+                if (otherUserId) {
+                    var userSnapshot = await database.ref('users/' + otherUserId).once('value');
+                    var userData = userSnapshot.val();
+                    
+                    // Get last message
+                    var lastMessage = null;
+                    if (chat.messages) {
+                        var messageKeys = Object.keys(chat.messages);
+                        if (messageKeys.length > 0) {
+                            var lastKey = messageKeys[messageKeys.length - 1];
+                            lastMessage = chat.messages[lastKey];
+                        }
+                    }
+                    
+                    conversations.push({
+                        chatId: chatId,
+                        userId: otherUserId,
+                        userData: userData,
+                        lastMessage: lastMessage
+                    });
                 }
             }
-        });
-    }
-
-    async openChat(userId, userData) {
-        this.activeChat = userId;
-        
-        document.getElementById('chat-list').style.display = 'none';
-        document.getElementById('chat-window').style.display = 'flex';
-        
-        document.getElementById('chat-header').innerHTML = `
-            <div class="avatar">${userData.displayName ? userData.displayName[0].toUpperCase() : '?'}</div>
-            <div>
-                <div style="font-weight: 600; font-family: 'Rajdhani', sans-serif;">${userData.displayName || userData.username}</div>
-                <div style="font-size: 12px;">
-                    <span class="online-indicator" id="chat-online-indicator"></span>
-                    <span style="color: var(--text-muted);">@${userData.username}</span>
-                </div>
-            </div>
-        `;
-        
-        this.listenToMessages(userId);
-        this.listenToPresence(userId);
-    }
-
-    listenToMessages(userId) {
-        const chatId = this.getChatId(userId);
-        const messagesRef = database.ref(`chats/${chatId}/messages`);
-        
-        messagesRef.on('child_added', (snapshot) => {
-            const message = snapshot.val();
-            this.displayMessage(message);
-            
-            // Save to IndexedDB
-            ChronoUtils.writeToIndexedDB('chats', snapshot.key, message);
-        });
-        
-        messagesRef.on('child_removed', (snapshot) => {
-            // Remove from UI
-            const messageElement = document.getElementById(`message-${snapshot.key}`);
-            if (messageElement) {
-                messageElement.remove();
-            }
-        });
-        
-        this.messageListeners[userId] = messagesRef;
-    }
-
-    listenToPresence(userId) {
-        const presenceRef = database.ref(`presence/${userId}`);
-        presenceRef.on('value', (snapshot) => {
-            const presence = snapshot.val();
-            const indicator = document.getElementById('chat-online-indicator');
-            if (indicator) {
-                if (presence && presence.online) {
-                    indicator.className = 'online-indicator online';
-                } else {
-                    indicator.className = 'online-indicator offline';
-                }
-            }
-        });
-    }
-
-    getChatId(userId) {
-        const participants = [this.currentUser.uid, userId].sort();
-        return participants.join('_');
-    }
-
-    displayMessage(message) {
-        const messagesArea = document.getElementById('messages-area');
-        const messageElement = document.createElement('div');
-        messageElement.id = `message-${message.id}`;
-        messageElement.className = `message ${message.senderId === this.currentUser.uid ? 'message-sent' : 'message-received'}`;
-        
-        messageElement.innerHTML = `
-            ${message.text}
-            <span class="message-time">${ChronoUtils.formatTime(message.createdAt)}</span>
-        `;
-        
-        messagesArea.appendChild(messageElement);
-        messagesArea.scrollTop = messagesArea.scrollHeight;
-    }
-
-    async sendMessage() {
-        const input = document.getElementById('message-input');
-        const text = input.value.trim();
-        
-        if (!text || !this.activeChat) return;
-        
-        const chatId = this.getChatId(this.activeChat);
-        const messageRef = database.ref(`chats/${chatId}/messages`).push();
-        
-        const message = {
-            id: messageRef.key,
-            senderId: this.currentUser.uid,
-            text: text,
-            createdAt: Date.now(),
-            expiresAt: Date.now() + 86400000 // 24 hours
-        };
-        
-        await messageRef.set(message);
-        
-        // Save to IndexedDB
-        ChronoUtils.writeToIndexedDB('chats', messageRef.key, message);
-        
-        input.value = '';
-    }
-
-    handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            this.sendMessage();
         }
-    }
-
-    closeChat() {
-        this.activeChat = null;
-        document.getElementById('chat-list').style.display = 'flex';
-        document.getElementById('chat-window').style.display = 'none';
         
-        // Remove listeners
-        Object.values(this.messageListeners).forEach(listener => listener.off());
-        this.messageListeners = {};
+        if (conversations.length === 0) {
+            list.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
+        }
         
-        document.getElementById('messages-area').innerHTML = '';
+        emptyState.style.display = 'none';
+        renderConversations();
+        
+    } catch (error) {
+        console.error('Error loading conversations:', error);
+        list.innerHTML = '<p style="color:var(--text-muted);text-align:center;">Failed to load chats</p>';
     }
 }
 
-const chatManager = new ChatManager();
-window.chatManager = chatManager;
-document.addEventListener('DOMContentLoaded', () => chatManager.init());
+function renderConversations() {
+    var list = document.getElementById('conversation-list');
+    
+    list.innerHTML = conversations.map(function(conv) {
+        var avatarText = (conv.userData.displayName || conv.userData.username || '?').charAt(0).toUpperCase();
+        var lastText = conv.lastMessage ? conv.lastMessage.text : 'No messages yet';
+        var lastTime = conv.lastMessage ? Utils.timeAgo(conv.lastMessage.createdAt) : '';
+        
+        return `
+            <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px;" onclick="openChat('${conv.userId}', '${conv.userData.displayName}')">
+                <div class="avatar">${avatarText}</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="font-weight:600;font-size:14px;">${conv.userData.displayName || 'Unknown'}</span>
+                        <span style="font-size:11px;color:var(--text-muted);">${lastTime}</span>
+                    </div>
+                    <div style="font-size:13px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lastText}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+document.getElementById('chat-search').addEventListener('input', function(e) {
+    var query = e.target.value.toLowerCase();
+    var filtered = conversations.filter(function(conv) {
+        var name = (conv.userData.displayName || '').toLowerCase();
+        var username = (conv.userData.username || '').toLowerCase();
+        return name.includes(query) || username.includes(query);
+    });
+    
+    renderFilteredConversations(filtered);
+});
+
+function renderFilteredConversations(filtered) {
+    var list = document.getElementById('conversation-list');
+    
+    if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-state-title">No conversations found</div></div>';
+        return;
+    }
+    
+    list.innerHTML = filtered.map(function(conv) {
+        var avatarText = (conv.userData.displayName || '?').charAt(0).toUpperCase();
+        var lastText = conv.lastMessage ? conv.lastMessage.text : 'No messages yet';
+        var lastTime = conv.lastMessage ? Utils.timeAgo(conv.lastMessage.createdAt) : '';
+        
+        return `
+            <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px;" onclick="openChat('${conv.userId}', '${conv.userData.displayName}')">
+                <div class="avatar">${avatarText}</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;justify-content:space-between;">
+                        <span style="font-weight:600;font-size:14px;">${conv.userData.displayName}</span>
+                        <span style="font-size:11px;color:var(--text-muted);">${lastTime}</span>
+                    </div>
+                    <div style="font-size:13px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${lastText}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function openChat(userId, displayName) {
+    sessionStorage.setItem('chatUserId', userId);
+    sessionStorage.setItem('chatUserName', displayName);
+    window.location.href = 'chat-window.html';
+}a
