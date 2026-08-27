@@ -5,16 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Notifications</title>
     <link rel="stylesheet" href="css/global.css">
+    <style>
+        .notifications-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        .notification-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .notification-card.unread {
+            border-color: var(--accent-blue);
+            background: rgba(0, 212, 255, 0.05);
+        }
+        .notification-card:hover {
+            border-color: var(--accent-purple);
+        }
+        .notification-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .notification-info {
+            flex: 1;
+        }
+        .notification-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .notification-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .mark-all-btn {
+            background: none;
+            border: none;
+            color: var(--accent-blue);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div class="app-header">
         <a href="home.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
         <span style="font-weight:600;">🔔 Notifications</span>
-        <span></span>
+        <button class="mark-all-btn" onclick="markAllRead()" id="mark-all-btn" style="display:none;">Mark all read</button>
     </div>
 
-    <div class="container">
-        <div id="notifications-list"></div>
+    <div class="notifications-container">
+        <div id="notifications-list">
+            <p style="text-align:center;color:var(--text-muted);">Loading notifications...</p>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
@@ -23,11 +75,17 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
     <script>
-        auth.onAuthStateChanged(async function(user) {
-            if (!user) { window.location.replace('login.html'); return; }
+        let currentUser = null;
+
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                window.location.replace('login.html');
+                return;
+            }
+            currentUser = user;
             loadNotifications(user.uid);
         });
-        
+
         async function loadNotifications(userId) {
             var list = document.getElementById('notifications-list');
             
@@ -45,29 +103,76 @@
                             <div class="empty-state-text">You're all caught up!</div>
                         </div>
                     `;
+                    document.getElementById('mark-all-btn').style.display = 'none';
                     return;
                 }
                 
+                var hasUnread = items.some(function([id, n]) { return !n.read; });
+                document.getElementById('mark-all-btn').style.display = hasUnread ? 'block' : 'none';
+                
                 list.innerHTML = items.map(function([id, notification]) {
                     var icon = notification.type === 'friend_request' ? '👥' :
+                               notification.type === 'friend_accepted' ? '✅' :
                                notification.type === 'message' ? '💬' :
                                notification.type === 'achievement' ? '🏆' :
-                               notification.type === 'reward' ? '🎁' : '🔔';
+                               notification.type === 'reward' ? '🎁' :
+                               notification.type === 'streak' ? '🔥' : '🔔';
+                    
+                    var unreadClass = notification.read ? '' : 'unread';
                     
                     return `
-                        <div class="card" style="display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:8px;">
-                            <span style="font-size:24px;">${icon}</span>
-                            <div style="flex:1;">
-                                <div style="font-size:14px;font-weight:500;">${notification.text || 'Notification'}</div>
-                                <div style="font-size:11px;color:var(--text-muted);">${Utils.timeAgo(notification.createdAt)}</div>
+                        <div class="notification-card ${unreadClass}" onclick="markRead('${id}')">
+                            <div class="notification-icon">${icon}</div>
+                            <div class="notification-info">
+                                <div class="notification-text">${notification.text || 'Notification'}</div>
+                                <div class="notification-time">${Utils.timeAgo(notification.createdAt)}</div>
                             </div>
                         </div>
                     `;
                 }).join('');
                 
             } catch (error) {
-                console.error('Error loading notifications:', error);
-                list.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Failed to load</p>';
+                console.error('Notifications load error:', error);
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <div class="empty-state-title">Couldn't load notifications</div>
+                        <button class="btn btn-secondary btn-small" onclick="loadNotifications(currentUser.uid)">RETRY</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function markRead(notificationId) {
+            try {
+                await database.ref('notifications/' + currentUser.uid + '/' + notificationId).update({
+                    read: true
+                });
+                loadNotifications(currentUser.uid);
+            } catch (error) {
+                console.error('Mark read error:', error);
+            }
+        }
+
+        async function markAllRead() {
+            try {
+                var snapshot = await database.ref('notifications/' + currentUser.uid).once('value');
+                var notifications = snapshot.val() || {};
+                
+                var updates = {};
+                Object.keys(notifications).forEach(function(id) {
+                    updates[id + '/read'] = true;
+                });
+                
+                if (Object.keys(updates).length > 0) {
+                    await database.ref('notifications/' + currentUser.uid).update(updates);
+                }
+                
+                loadNotifications(currentUser.uid);
+                Utils.showToast('All notifications marked as read', 'success');
+                
+            } catch (error) {
+                console.error('Mark all error:', error);
             }
         }
     </script>
