@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Edit Profile</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+    <div class="app-header">
+        <a href="profile.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
+        <span style="font-weight:600;">Edit Profile</span>
+        <button class="btn btn-primary btn-small" onclick="saveProfile()">SAVE</button>
+    </div>
+
+    <div class="container">
+        <div class="card" style="text-align:center;padding:24px;">
+            <div class="avatar avatar-large" id="preview-avatar" style="margin:0 auto 12px;cursor:pointer;" onclick="document.getElementById('avatar-input').click()">?</div>
+            <p style="color:var(--text-muted);font-size:12px;">Tap to change photo</p>
+            <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="previewImage(this)">
+        </div>
+
+        <div class="card">
+            <div style="margin-bottom:16px;">
+                <label style="display:block;margin-bottom:6px;color:var(--text-secondary);font-size:13px;">Display Name</label>
+                <input type="text" id="edit-display-name" class="input-field" placeholder="Your name">
+            </div>
+            
+            <div style="margin-bottom:16px;">
+                <label style="display:block;margin-bottom:6px;color:var(--text-secondary);font-size:13px;">Username</label>
+                <input type="text" id="edit-username" class="input-field" placeholder="username">
+                <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Letters, numbers, dots, underscores only</p>
+            </div>
+            
+            <div>
+                <label style="display:block;margin-bottom:6px;color:var(--text-secondary);font-size:13px;">Bio</label>
+                <textarea id="edit-bio" class="input-field" rows="3" placeholder="Tell us about yourself"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+        let currentUser = null;
+        let selectedImage = null;
+        
+        auth.onAuthStateChanged(async function(user) {
+            if (!user) {
+                window.location.replace('login.html');
+                return;
+            }
+            currentUser = user;
+            
+            var snapshot = await database.ref('users/' + user.uid).once('value');
+            var userData = snapshot.val() || {};
+            
+            document.getElementById('edit-display-name').value = userData.displayName || '';
+            document.getElementById('edit-username').value = userData.username || '';
+            document.getElementById('edit-bio').value = userData.bio || '';
+            
+            var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
+            var avatarHTML = userData.avatarURL ? 
+                '<img src="' + userData.avatarURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : 
+                avatarText;
+            document.getElementById('preview-avatar').innerHTML = avatarHTML;
+        });
+        
+        function previewImage(input) {
+            var file = input.files[0];
+            if (!file) return;
+            
+            selectedImage = file;
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-avatar').innerHTML = 
+                    '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        async function saveProfile() {
+            var displayName = document.getElementById('edit-display-name').value.trim();
+            var username = document.getElementById('edit-username').value.trim().toLowerCase();
+            var bio = document.getElementById('edit-bio').value.trim();
+            
+            if (!displayName) {
+                Utils.showToast('Display name cannot be empty', 'error');
+                return;
+            }
+            
+            var usernameRegex = /^[a-zA-Z0-9._]+$/;
+            if (!usernameRegex.test(username)) {
+                Utils.showToast('Invalid username characters', 'error');
+                return;
+            }
+            
+            try {
+                // Check username uniqueness
+                var usernameSnapshot = await database.ref('usernames/' + username).once('value');
+                if (usernameSnapshot.exists() && usernameSnapshot.val() !== currentUser.uid) {
+                    Utils.showToast('Username already taken', 'error');
+                    return;
+                }
+                
+                // Get current username to remove old one
+                var currentSnapshot = await database.ref('users/' + currentUser.uid).once('value');
+                var currentData = currentSnapshot.val();
+                
+                if (currentData.username && currentData.username !== username) {
+                    await database.ref('usernames/' + currentData.username).remove();
+                }
+                
+                // Upload image if selected
+                var avatarURL = currentData.avatarURL || '';
+                if (selectedImage) {
+                    avatarURL = await uploadImage(selectedImage);
+                }
+                
+                // Update user data
+                await database.ref('users/' + currentUser.uid).update({
+                    displayName: displayName,
+                    username: username,
+                    bio: bio,
+                    avatarURL: avatarURL
+                });
+                
+                await database.ref('usernames/' + username).set(currentUser.uid);
+                
+                Utils.showToast('Profile updated!', 'success');
+                setTimeout(function() {
+                    window.location.href = 'profile.html';
+                }, 500);
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                Utils.showToast('Failed to save profile', 'error');
+            }
+        }
+        
+        async function uploadImage(file) {
+            // Compress image
+            var compressed = await compressImage(file, 200, 200);
+            
+            var storageRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
+            await storageRef.putString(compressed, 'data_url');
+            return await storageRef.getDownloadURL();
+        }
+        
+        function compressImage(file, maxWidth, maxHeight) {
+            return new Promise(function(resolve) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var ctx = canvas.getContext('2d');
+                        
+                        var ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+                        canvas.width = img.width * ratio;
+                        canvas.height = img.height * ratio;
+                        
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+</body>
+  </html>
