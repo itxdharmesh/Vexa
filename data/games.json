@@ -1,82 +1,84 @@
 [
     {
-        "id": "coin_flip",
-        "name": "Coin Flip",
-        "description": "Test your virtual luck. Guess heads or tails!",
-        "category": "Luck",
-        "icon": "🪙",
-        "rewards": {"coins": 10, "xp": 5}
-    },
-    {
-        "id": "dice",
-        "name": "Dice Roll",
-        "description": "Roll the virtual dice and win rewards!",
-        "category": "Luck",
-        "icon": "🎲",
-        "rewards": {"coins": 15, "xp": 8}
-    },
-    {
-        "id": "higher_lower",
-        "name": "Higher or Lower",
-        "description": "Guess if the next number is higher or lower!",
-        "category": "Luck",
-        "icon": "📊",
-        "rewards": {"coins": 12, "xp": 6}
-    },
-    {
-        "id": "lucky_number",
-        "name": "Lucky Number",
-        "description": "Choose your lucky number and win!",
-        "category": "Luck",
-        "icon": "🔢",
-        "rewards": {"coins": 20, "xp": 10}
-    },
-    {
-        "id": "mystery_box",
-        "name": "Mystery Box",
-        "description": "Open the mystery box for surprise rewards!",
-        "category": "Luck",
-        "icon": "📦",
-        "rewards": {"coins": 25, "xp": 12}
-    },
-    {
-        "id": "memory",
+        "id": "memory-match",
         "name": "Memory Match",
-        "description": "Test your memory by matching cards!",
         "category": "Brain",
         "icon": "🧠",
-        "rewards": {"coins": 15, "xp": 10}
+        "type": "free",
+        "description": "Match pairs of cards to test your memory"
     },
     {
-        "id": "reaction",
-        "name": "Reaction Time",
-        "description": "Test your reaction speed!",
-        "category": "Reaction",
+        "id": "reaction-rush",
+        "name": "Reaction Rush",
+        "category": "Skill",
         "icon": "⚡",
-        "rewards": {"coins": 10, "xp": 8}
+        "type": "free",
+        "description": "Test your reaction speed"
     },
     {
-        "id": "number_rush",
+        "id": "tap-target",
+        "name": "Tap Target",
+        "category": "Skill",
+        "icon": "🎯",
+        "type": "free",
+        "description": "Tap targets as fast as you can"
+    },
+    {
+        "id": "number-rush",
         "name": "Number Rush",
-        "description": "Solve math problems quickly!",
         "category": "Brain",
         "icon": "🔢",
-        "rewards": {"coins": 15, "xp": 10}
+        "type": "free",
+        "description": "Solve math problems quickly"
     },
     {
-        "id": "pattern",
-        "name": "Pattern Match",
-        "description": "Find the missing pattern!",
+        "id": "pattern-breaker",
+        "name": "Pattern Breaker",
         "category": "Puzzle",
         "icon": "🧩",
-        "rewards": {"coins": 12, "xp": 8}
+        "type": "free",
+        "description": "Find and break the pattern"
     },
     {
-        "id": "football_challenge",
-        "name": "Football Challenge",
-        "description": "Score goals in this football challenge!",
+        "id": "football-flick",
+        "name": "Football Flick",
         "category": "Sports",
         "icon": "⚽",
-        "rewards": {"coins": 20, "xp": 15}
+        "type": "free",
+        "description": "Flick the ball to score goals"
+    },
+    {
+        "id": "wrong-button",
+        "name": "Wrong Button",
+        "category": "Fun",
+        "icon": "🚫",
+        "type": "free",
+        "description": "DON'T press the wrong button!"
+    },
+    {
+        "id": "dont-laugh",
+        "name": "Don't Laugh",
+        "category": "Fun",
+        "icon": "😂",
+        "type": "free",
+        "description": "Try not to laugh at funny jokes"
+    },
+    {
+        "id": "coin-flip",
+        "name": "Coin Flip",
+        "category": "Luck",
+        "icon": "🪙",
+        "type": "luck",
+        "entryCost": 50,
+        "description": "Flip the coin and test your luck"
+    },
+    {
+        "id": "dice-roll",
+        "name": "Dice Roll",
+        "category": "Luck",
+        "icon": "🎲",
+        "type": "luck",
+        "entryCost": 25,
+        "description": "Roll the dice and win coins"
     }
 ]
