@@ -5,7 +5,7 @@
         "category": "Brain",
         "icon": "🧠",
         "type": "free",
-        "description": "Match pairs of cards to test your memory"
+        "description": "Match pairs to test memory"
     },
     {
         "id": "reaction-rush",
@@ -21,7 +21,7 @@
         "category": "Skill",
         "icon": "🎯",
         "type": "free",
-        "description": "Tap targets as fast as you can"
+        "description": "Tap targets fast"
     },
     {
         "id": "number-rush",
@@ -29,7 +29,7 @@
         "category": "Brain",
         "icon": "🔢",
         "type": "free",
-        "description": "Solve math problems quickly"
+        "description": "Solve math quickly"
     },
     {
         "id": "pattern-breaker",
@@ -37,7 +37,7 @@
         "category": "Puzzle",
         "icon": "🧩",
         "type": "free",
-        "description": "Find and break the pattern"
+        "description": "Find the pattern"
     },
     {
         "id": "football-flick",
@@ -45,7 +45,7 @@
         "category": "Sports",
         "icon": "⚽",
         "type": "free",
-        "description": "Flick the ball to score goals"
+        "description": "Score goals"
     },
     {
         "id": "wrong-button",
@@ -53,7 +53,7 @@
         "category": "Fun",
         "icon": "🚫",
         "type": "free",
-        "description": "DON'T press the wrong button!"
+        "description": "Don't press wrong button"
     },
     {
         "id": "dont-laugh",
@@ -61,7 +61,7 @@
         "category": "Fun",
         "icon": "😂",
         "type": "free",
-        "description": "Try not to laugh at funny jokes"
+        "description": "Try not to laugh"
     },
     {
         "id": "coin-flip",
@@ -70,7 +70,7 @@
         "icon": "🪙",
         "type": "luck",
         "entryCost": 50,
-        "description": "Flip the coin and test your luck"
+        "description": "Test your luck"
     },
     {
         "id": "dice-roll",
@@ -79,6 +79,6 @@
         "icon": "🎲",
         "type": "luck",
         "entryCost": 25,
-        "description": "Roll the dice and win coins"
+        "description": "Roll the dice"
     }
 ]
