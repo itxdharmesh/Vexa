@@ -8,25 +8,21 @@
 </head>
 <body>
     <div class="container" style="padding:20px 16px;">
-        <!-- Logo -->
-        <div style="text-align:center;margin-bottom:8px;">
-            <a href="home.html" class="app-logo" style="font-size:28px;">VEXA</a>
+        <div style="text-align:center;margin-bottom:16px;">
+            <a href="home.html" style="text-decoration:none;color:var(--accent-blue);font-size:32px;font-weight:900;letter-spacing:3px;">VEXA</a>
+            <p style="color:var(--text-muted);font-size:11px;letter-spacing:2px;margin-top:4px;">GAME HUB</p>
         </div>
-        <h1 style="text-align:center;font-size:24px;font-weight:700;margin-bottom:4px;">VEXA</h1>
-        <p style="text-align:center;color:var(--accent-blue);font-size:16px;font-weight:600;letter-spacing:2px;margin-bottom:16px;">GAME HUB</p>
 
-        <!-- Popular Games -->
         <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">🔥 POPULAR GAMES</h2>
-        <div id="popular-games" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px;"></div>
+        <div id="popular-games" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px;">
+            <p style="color:var(--text-muted);">Loading...</p>
+        </div>
 
-        <!-- Categories -->
         <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">📂 GAME CATEGORIES</h2>
-        
         <div id="categories-list"></div>
 
-        <!-- Multiplayer - BOTTOM -->
         <div class="card" style="margin-top:24px;text-align:center;padding:20px;">
-            <div style="font-size:32px;margin-bottom:8px;">👥</div>
+            <div style="font-size:32px;">👥</div>
             <h3 style="font-size:16px;font-weight:700;">MULTIPLAYER</h3>
             <p style="color:var(--text-muted);font-size:13px;margin-top:4px;">Coming Soon 🚧</p>
         </div>
@@ -43,7 +39,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
     <script>
@@ -57,14 +52,13 @@
                 var response = await fetch('data/games.json');
                 var games = await response.json();
                 
-                var freeGames = games.filter(function(g) { return g.type === 'free'; });
                 var popularContainer = document.getElementById('popular-games');
                 
                 popularContainer.innerHTML = games.slice(0, 4).map(function(game) {
                     var btnText = game.type === 'luck' ? 'PLAY (' + game.entryCost + ' 🪙)' : 'PLAY FREE';
                     return `
                         <a href="games/${game.id}.html" style="text-decoration:none;color:inherit;">
-                            <div class="stat-card" style="text-align:center;padding:16px;">
+                            <div class="stat-card" style="text-align:center;padding:16px;cursor:pointer;">
                                 <div style="font-size:36px;">${game.icon}</div>
                                 <div style="font-weight:600;font-size:14px;margin-top:8px;">${game.name}</div>
                                 <div style="font-size:11px;color:var(--text-muted);margin:4px 0;">${game.category}</div>
@@ -74,12 +68,9 @@
                     `;
                 }).join('');
                 
-                // Categories
                 var categories = {};
                 games.forEach(function(game) {
-                    if (!categories[game.category]) {
-                        categories[game.category] = [];
-                    }
+                    if (!categories[game.category]) categories[game.category] = [];
                     categories[game.category].push(game);
                 });
                 
@@ -94,7 +85,7 @@
                                     var btnText = game.type === 'luck' ? 'PLAY (' + game.entryCost + ' 🪙)' : 'PLAY FREE';
                                     return `
                                         <a href="games/${game.id}.html" style="text-decoration:none;color:inherit;">
-                                            <div class="stat-card" style="text-align:center;padding:12px;">
+                                            <div class="stat-card" style="text-align:center;padding:12px;cursor:pointer;">
                                                 <div style="font-size:28px;">${game.icon}</div>
                                                 <div style="font-weight:600;font-size:13px;margin-top:4px;">${game.name}</div>
                                                 <button class="btn btn-primary btn-small" style="width:100%;margin-top:6px;font-size:10px;">${btnText}</button>
@@ -108,7 +99,8 @@
                 }).join('');
                 
             } catch (error) {
-                console.error('Error loading games:', error);
+                console.error('Error:', error);
+                document.getElementById('popular-games').innerHTML = '<p style="color:var(--danger);">Failed to load games</p>';
             }
         }
     </script>
