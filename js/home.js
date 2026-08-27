@@ -1,8 +1,10 @@
 let currentUser = null;
+let userData = null;
+let progressData = null;
+let streakData = null;
 let dailyRewardData = null;
 let gamesData = [];
 
-// Initialize with auth check
 auth.onAuthStateChanged(async function(user) {
     if (!user) {
         window.location.replace('login.html');
@@ -11,55 +13,71 @@ auth.onAuthStateChanged(async function(user) {
     
     currentUser = user;
     
-    // Subscribe to state changes
-    appState.subscribe(function(state) {
-        if (state.user) {
-            renderStats(state);
-        }
-    });
-    
-    // Initialize state
-    await appState.init();
-    
-    // Load other data
-    await loadDailyReward();
-    await loadGames();
-    
-    // Render
-    renderStats(appState);
-    renderDailyReward();
-    renderFeaturedGames();
-    
-    // Set up real-time progress listener
-    database.ref('progress/' + user.uid).on('value', function(snapshot) {
-        appState.progress = snapshot.val() || { coins: 0, xp: 0, level: 1 };
-        renderStats(appState);
-    });
-});
-
-function renderStats(state) {
-    var progress = state.progress || { coins: 0, xp: 0, level: 1 };
-    var streak = state.streak || { currentStreak: 0 };
-    var levelInfo = Utils.calculateLevel(progress.xp || 0);
-    
-    document.getElementById('home-coins').textContent = Utils.formatNumber(progress.coins || 0);
-    document.getElementById('home-xp').textContent = Utils.formatNumber(progress.xp || 0);
-    document.getElementById('home-level').textContent = levelInfo.level;
-    document.getElementById('home-streak').textContent = streak.currentStreak || 0;
-}
-
-async function loadDailyReward() {
     try {
-        var snapshot = await database.ref('dailyRewards/' + currentUser.uid).once('value');
-        dailyRewardData = snapshot.val() || null;
+        // Load all data in parallel
+        var [userSnapshot, progressSnapshot, streakSnapshot, rewardSnapshot] = await Promise.all([
+            database.ref('users/' + user.uid).once('value'),
+            database.ref('progress/' + user.uid).once('value'),
+            database.ref('streaks/' + user.uid).once('value'),
+            database.ref('dailyRewards/' + user.uid).once('value')
+        ]);
+        
+        userData = userSnapshot.val() || {};
+        progressData = progressSnapshot.val() || { coins: 0, xp: 0, level: 1 };
+        streakData = streakSnapshot.val() || { currentStreak: 0, bestStreak: 0 };
+        dailyRewardData = rewardSnapshot.val() || null;
+        
+        renderUserInfo();
+        renderStats();
         renderDailyReward();
+        loadGames();
+        
+        // Real-time progress updates
+        database.ref('progress/' + user.uid).on('value', function(snapshot) {
+            progressData = snapshot.val() || { coins: 0, xp: 0, level: 1 };
+            renderStats();
+        });
+        
+        // Real-time streak updates
+        database.ref('streaks/' + user.uid).on('value', function(snapshot) {
+            streakData = snapshot.val() || { currentStreak: 0, bestStreak: 0 };
+            renderStats();
+        });
+        
     } catch (error) {
-        console.error('Daily reward load error:', error);
+        console.error('Home load error:', error);
+        document.getElementById('home-display-name').textContent = 'Error loading';
+        document.getElementById('home-username').textContent = '@error';
+        document.getElementById('home-coins').textContent = '--';
+        document.getElementById('home-xp').textContent = '--';
+        document.getElementById('home-level').textContent = '--';
+        document.getElementById('home-streak').textContent = '--';
+        
         document.getElementById('daily-reward-content').innerHTML = `
-            <p style="color:var(--danger);font-size:13px;">Couldn't load reward</p>
-            <button class="btn btn-secondary btn-small" onclick="loadDailyReward()" style="margin-top:8px;">RETRY</button>
+            <p style="color:var(--danger);font-size:13px;">Couldn't load data</p>
+            <button class="btn btn-secondary btn-small" onclick="location.reload()">RETRY</button>
         `;
     }
+});
+
+function renderUserInfo() {
+    var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
+    var avatarHTML = userData.avatarURL ? 
+        '<img src="' + userData.avatarURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : 
+        avatarText;
+    
+    document.getElementById('home-avatar').innerHTML = avatarHTML;
+    document.getElementById('home-display-name').textContent = userData.displayName || 'User';
+    document.getElementById('home-username').textContent = '@' + (userData.username || 'user');
+}
+
+function renderStats() {
+    var levelInfo = Utils.calculateLevel(progressData.xp || 0);
+    
+    document.getElementById('home-coins').textContent = Utils.formatNumber(progressData.coins || 0);
+    document.getElementById('home-xp').textContent = Utils.formatNumber(progressData.xp || 0);
+    document.getElementById('home-level').textContent = levelInfo.level;
+    document.getElementById('home-streak').textContent = streakData.currentStreak || 0;
 }
 
 function renderDailyReward() {
@@ -84,9 +102,9 @@ function renderDailyReward() {
     var rewardAmount = rewards[(rewardDay - 1) % rewards.length];
     
     content.innerHTML = `
-        <p style="font-size:13px;color:var(--text-secondary);">DAY ${rewardDay}</p>
+        <p style="font-size:14px;color:var(--text-secondary);">DAY ${rewardDay}</p>
         <p style="font-size:24px;font-weight:700;color:var(--accent-blue);margin:8px 0;">+${rewardAmount} 🪙</p>
-        <button class="btn btn-primary btn-small" onclick="claimDailyReward(${rewardDay}, ${rewardAmount})">CLAIM REWARD</button>
+        <button class="btn btn-primary" onclick="claimDailyReward(${rewardDay}, ${rewardAmount})" style="width:100%;">CLAIM REWARD</button>
     `;
 }
 
@@ -97,9 +115,14 @@ async function claimDailyReward(rewardDay, rewardAmount) {
             lastClaimAt: Date.now()
         });
         
-        await appState.addCoins(rewardAmount);
+        var newCoins = (progressData.coins || 0) + rewardAmount;
+        await database.ref('progress/' + currentUser.uid).update({ coins: newCoins });
+        
         dailyRewardData = { rewardDay: rewardDay + 1, lastClaimAt: Date.now() };
+        progressData.coins = newCoins;
+        
         renderDailyReward();
+        renderStats();
         
         Utils.showToast('Claimed ' + rewardAmount + ' coins! 🎉', 'success');
     } catch (error) {
@@ -112,6 +135,7 @@ async function loadGames() {
     try {
         var response = await fetch('data/games.json');
         gamesData = await response.json();
+        renderFeaturedGames();
     } catch (error) {
         console.error('Games load error:', error);
     }
@@ -127,9 +151,9 @@ function renderFeaturedGames() {
     container.innerHTML = featured.map(function(game) {
         return `
             <a href="games/${game.id}.html" style="text-decoration:none;color:inherit;">
-                <div class="stat-card" style="text-align:center;padding:16px;">
-                    <div style="font-size:32px;margin-bottom:8px;">${game.icon}</div>
-                    <div style="font-weight:600;font-size:13px;">${game.name}</div>
+                <div class="stat-card" style="text-align:center;padding:16px;cursor:pointer;">
+                    <div style="font-size:36px;">${game.icon}</div>
+                    <div style="font-weight:600;font-size:13px;margin-top:8px;">${game.name}</div>
                     <button class="btn btn-primary btn-small" style="width:100%;margin-top:8px;">PLAY</button>
                 </div>
             </a>
@@ -137,14 +161,22 @@ function renderFeaturedGames() {
     }).join('');
 }
 
-function playRound() {
-    // Open a random free game
+function playRandomGame() {
     if (!gamesData.length) {
         window.location.href = 'games.html';
         return;
     }
     
     var freeGames = gamesData.filter(function(g) { return g.type === 'free'; });
+    if (freeGames.length === 0) {
+        window.location.href = 'games.html';
+        return;
+    }
+    
     var randomGame = freeGames[Math.floor(Math.random() * freeGames.length)];
     window.location.href = 'games/' + randomGame.id + '.html';
+}
+
+function goToProfile() {
+    window.location.href = 'profile.html';
 }
