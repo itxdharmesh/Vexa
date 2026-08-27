@@ -13,18 +13,34 @@
     </div>
 
     <div class="container">
-        <!-- User Summary -->
+        <!-- Profile Header - NO EMAIL -->
         <div class="card" style="display:flex;align-items:center;gap:16px;padding:20px;">
             <div class="avatar avatar-large" id="account-avatar">?</div>
             <div style="flex:1;">
                 <div style="font-size:18px;font-weight:700;" id="account-name">Loading...</div>
                 <div style="font-size:13px;color:var(--text-muted);" id="account-username">@username</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;" id="account-email">email@example.com</div>
+                <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;" id="account-bio"></div>
             </div>
             <a href="edit-profile.html" class="btn btn-secondary btn-small">EDIT</a>
         </div>
 
-        <!-- Stats -->
+        <!-- Social Stats - Followers, Following, Friends -->
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="stat-card">
+                <div class="stat-value" id="account-followers">0</div>
+                <div class="stat-label">Followers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="account-following">0</div>
+                <div class="stat-label">Following</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="account-friends">0</div>
+                <div class="stat-label">Friends</div>
+            </div>
+        </div>
+
+        <!-- Progress Stats -->
         <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
             <div class="stat-card">
                 <div class="stat-value" id="account-coins">0</div>
@@ -40,51 +56,27 @@
             </div>
         </div>
 
-        <!-- Menu Items -->
-        <div class="card" style="padding:0;overflow:hidden;">
-            <a href="profile.html" class="menu-item">
-                <span>👤</span> My Profile <span style="margin-left:auto;">›</span>
-            </a>
-            <a href="friends.html" class="menu-item">
-                <span>👥</span> Friends <span style="margin-left:auto;">›</span>
-            </a>
-            <a href="settings.html" class="menu-item">
-                <span>⚙️</span> Settings <span style="margin-left:auto;">›</span>
-            </a>
-            <a href="achievements.html" class="menu-item">
-                <span>🏆</span> Achievements <span style="margin-left:auto;">›</span>
-            </a>
-            <a href="leaderboard.html" class="menu-item">
-                <span>🥇</span> Leaderboard <span style="margin-left:auto;">›</span>
-            </a>
-            <a href="notifications.html" class="menu-item">
-                <span>🔔</span> Notifications <span style="margin-left:auto;">›</span>
-            </a>
+        <!-- Menu -->
+        <div class="card" style="padding:0;overflow:hidden;margin-top:12px;">
+            <a href="profile.html" class="menu-item"><span>👤</span> My Profile <span style="margin-left:auto;">›</span></a>
+            <a href="friends.html" class="menu-item"><span>👥</span> Friends <span style="margin-left:auto;">›</span></a>
+            <a href="settings.html" class="menu-item"><span>⚙️</span> Settings <span style="margin-left:auto;">›</span></a>
+            <a href="achievements.html" class="menu-item"><span>🏆</span> Achievements <span style="margin-left:auto;">›</span></a>
+            <a href="leaderboard.html" class="menu-item"><span>🥇</span> Leaderboard <span style="margin-left:auto;">›</span></a>
+            <a href="notifications.html" class="menu-item"><span>🔔</span> Notifications <span style="margin-left:auto;">›</span></a>
         </div>
 
-        <!-- Logout -->
-        <button class="btn btn-danger" style="width:100%;" onclick="logout()">🚪 LOGOUT</button>
+        <button class="btn btn-danger" style="width:100%;margin-top:12px;" onclick="logout()">🚪 LOGOUT</button>
     </div>
 
     <style>
         .menu-item {
-            display:flex;
-            align-items:center;
-            gap:12px;
-            padding:16px 20px;
-            color:var(--text-primary);
-            text-decoration:none;
-            font-size:14px;
-            font-weight:500;
+            display:flex;align-items:center;gap:12px;padding:14px 20px;
+            color:var(--text-primary);text-decoration:none;font-size:14px;
             border-bottom:1px solid var(--border);
-            transition:background 0.2s;
         }
-        .menu-item:hover {
-            background:var(--bg-card-hover);
-        }
-        .menu-item:last-child {
-            border-bottom:none;
-        }
+        .menu-item:hover { background:var(--bg-card-hover); }
+        .menu-item:last-child { border-bottom:none; }
     </style>
 
     <nav class="bottom-nav">
@@ -103,41 +95,53 @@
     <script src="js/utils.js"></script>
     <script>
         auth.onAuthStateChanged(async function(user) {
-            if (!user) {
-                window.location.replace('login.html');
-                return;
-            }
+            if (!user) { window.location.replace('login.html'); return; }
             
-            try {
-                var userSnapshot = await database.ref('users/' + user.uid).once('value');
-                var userData = userSnapshot.val() || {};
-                
-                var progressSnapshot = await database.ref('progress/' + user.uid).once('value');
-                var progressData = progressSnapshot.val() || { coins: 0, xp: 0 };
-                
-                var streakSnapshot = await database.ref('streaks/' + user.uid).once('value');
-                var streakData = streakSnapshot.val() || { currentStreak: 0 };
-                
-                var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
-                var avatarHTML = userData.avatarURL ? 
-                    '<img src="' + userData.avatarURL + '" style="width:100%;height:100%;object-fit:cover;">' : 
-                    avatarText;
-                
-                document.getElementById('account-avatar').innerHTML = avatarHTML;
-                document.getElementById('account-name').textContent = userData.displayName || 'User';
-                document.getElementById('account-username').textContent = '@' + (userData.username || 'user');
-                document.getElementById('account-email').textContent = userData.email || user.email;
-                document.getElementById('account-coins').textContent = Utils.formatNumber(progressData.coins);
-                document.getElementById('account-xp').textContent = Utils.formatNumber(progressData.xp);
-                document.getElementById('account-streak').textContent = streakData.currentStreak;
-                
-            } catch (error) {
-                console.error('Error loading account:', error);
-            }
+            // Load data in PARALLEL for speed
+            var [userSnapshot, progressSnapshot, streakSnapshot, followersSnapshot, followingSnapshot, friendsSnapshot] = 
+                await Promise.all([
+                    database.ref('users/' + user.uid).once('value'),
+                    database.ref('progress/' + user.uid).once('value'),
+                    database.ref('streaks/' + user.uid).once('value'),
+                    database.ref('followers/' + user.uid).once('value'),
+                    database.ref('following/' + user.uid).once('value'),
+                    database.ref('friends/' + user.uid).once('value')
+                ]);
+            
+            var userData = userSnapshot.val() || {};
+            var progress = progressSnapshot.val() || { coins: 0, xp: 0 };
+            var streak = streakSnapshot.val() || { currentStreak: 0 };
+            var followers = followersSnapshot.val() || {};
+            var following = followingSnapshot.val() || {};
+            var friends = friendsSnapshot.val() || {};
+            
+            var avatarText = (userData.displayName || '?').charAt(0).toUpperCase();
+            var avatarHTML = userData.avatarURL ? 
+                '<img src="' + userData.avatarURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : 
+                avatarText;
+            
+            document.getElementById('account-avatar').innerHTML = avatarHTML;
+            document.getElementById('account-name').textContent = userData.displayName || 'User';
+            document.getElementById('account-username').textContent = '@' + (userData.username || 'user');
+            document.getElementById('account-bio').textContent = userData.bio || '';
+            
+            document.getElementById('account-followers').textContent = Object.keys(followers).length;
+            document.getElementById('account-following').textContent = Object.keys(following).length;
+            document.getElementById('account-friends').textContent = Object.keys(friends).length;
+            document.getElementById('account-coins').textContent = Utils.formatNumber(progress.coins);
+            document.getElementById('account-xp').textContent = Utils.formatNumber(progress.xp);
+            document.getElementById('account-streak').textContent = streak.currentStreak;
+            
+            // Real-time progress update
+            database.ref('progress/' + user.uid).on('value', function(snapshot) {
+                var updatedProgress = snapshot.val() || { coins: 0, xp: 0 };
+                document.getElementById('account-coins').textContent = Utils.formatNumber(updatedProgress.coins);
+                document.getElementById('account-xp').textContent = Utils.formatNumber(updatedProgress.xp);
+            });
         });
         
         function logout() {
-            if (confirm('Are you sure you want to logout?')) {
+            if (confirm('Logout?')) {
                 auth.signOut().then(function() {
                     window.location.replace('login.html');
                 });
