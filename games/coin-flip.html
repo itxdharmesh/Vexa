@@ -5,6 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Coin Flip</title>
     <link rel="stylesheet" href="../css/global.css">
+    <style>
+        .game-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 16px;
+            text-align: center;
+        }
+        .coin {
+            width: 120px;
+            height: 120px;
+            margin: 32px auto;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(255, 215, 0, 0.3);
+            transition: transform 0.8s;
+        }
+        .buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 16px 0;
+        }
+        .result {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 16px 0;
+            min-height: 28px;
+        }
+    </style>
 </head>
 <body>
     <div class="app-header">
@@ -13,8 +47,8 @@
         <span></span>
     </div>
 
-    <div style="max-width:400px;margin:0 auto;padding:16px;text-align:center;">
-        <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">Virtual coins only. No real-money gambling.</p>
+    <div class="game-container">
+        <p style="color:var(--text-muted);font-size:12px;">Virtual coins only. No real-money gambling.</p>
         
         <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
             <div class="stat-card">
@@ -22,21 +56,19 @@
                 <div class="stat-label">🪙 Balance</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="entry">50</div>
+                <div class="stat-value">50</div>
                 <div class="stat-label">Entry Cost</div>
             </div>
         </div>
 
-        <div id="coin" style="width:120px;height:120px;margin:32px auto;border-radius:50%;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-size:48px;cursor:pointer;box-shadow:0 8px 24px rgba(255,215,0,0.3);" onclick="flipCoin()">
-            🪙
-        </div>
+        <div class="coin" id="coin">🪙</div>
 
-        <div style="display:flex;gap:12px;justify-content:center;">
+        <div class="buttons">
             <button class="btn btn-primary" onclick="play('heads')">HEADS</button>
             <button class="btn btn-secondary" onclick="play('tails')">TAILS</button>
         </div>
 
-        <div id="result" style="font-size:18px;font-weight:600;margin:16px 0;"></div>
+        <div class="result" id="result"></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
@@ -47,63 +79,73 @@
     <script>
         let currentUser = null;
         let balance = 0;
+        let isFlipping = false;
         const ENTRY_COST = 50;
-        
+
         auth.onAuthStateChanged(async function(user) {
-            if (!user) { window.location.replace('../login.html'); return; }
+            if (!user) {
+                window.location.replace('../login.html');
+                return;
+            }
             currentUser = user;
-            var snapshot = await database.ref('progress/' + user.uid).once('value');
-            var progress = snapshot.val() || { coins: 0 };
-            balance = progress.coins;
-            document.getElementById('balance').textContent = balance;
+            
+            try {
+                var snapshot = await database.ref('progress/' + user.uid).once('value');
+                var progress = snapshot.val() || { coins: 0 };
+                balance = progress.coins || 0;
+                document.getElementById('balance').textContent = balance;
+            } catch (error) {
+                console.error('Load error:', error);
+                document.getElementById('balance').textContent = '0';
+            }
         });
-        
+
         async function play(choice) {
+            if (isFlipping) return;
+            
             if (balance < ENTRY_COST) {
                 Utils.showToast('Not enough coins! Need ' + ENTRY_COST + ' coins', 'error');
                 return;
             }
             
+            isFlipping = true;
             balance -= ENTRY_COST;
             document.getElementById('balance').textContent = balance;
-            document.getElementById('result').textContent = 'Flipping...';
+            
+            var resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Flipping...';
+            resultDiv.style.color = 'var(--text-primary)';
             
             var coin = document.getElementById('coin');
             coin.style.transform = 'rotate(720deg)';
-            coin.style.transition = 'transform 1s';
             
             setTimeout(async function() {
                 coin.style.transform = 'rotate(0deg)';
-                var result = Math.random() < 0.5 ? 'heads' : 'tails';
-                var won = choice === result;
+                
+                // GENUINE RANDOM
+                var randomValue = Math.random();
+                var result = randomValue < 0.5 ? 'heads' : 'tails';
+                var won = (choice === result);
                 
                 if (won) {
                     balance += 100;
-                    document.getElementById('result').textContent = '🎉 You won! +100 coins!';
-                    document.getElementById('result').style.color = '#10B981';
+                    resultDiv.textContent = '🎉 ' + result.toUpperCase() + '! You won +100 coins!';
+                    resultDiv.style.color = '#10B981';
                 } else {
-                    document.getElementById('result').textContent = '😢 You lost! -50 coins';
-                    document.getElementById('result').style.color = '#EF4444';
+                    resultDiv.textContent = '😢 ' + result.toUpperCase() + '! You lost -50 coins';
+                    resultDiv.style.color = '#EF4444';
                 }
                 
                 document.getElementById('balance').textContent = balance;
-                await database.ref('progress/' + currentUser.uid).update({ coins: balance });
                 
-                var gameRef = database.ref('gameStats/' + currentUser.uid + '/coin-flip');
-                var snapshot = await gameRef.once('value');
-                var stats = snapshot.val() || { gamesPlayed: 0 };
-                await gameRef.update({ gamesPlayed: stats.gamesPlayed + 1 });
+                try {
+                    await database.ref('progress/' + currentUser.uid).update({ coins: balance });
+                } catch (error) {
+                    console.error('Save error:', error);
+                }
                 
-            }, 1000);
-        }
-        
-        function flipCoin() {
-            var coin = document.getElementById('coin');
-            coin.style.transform = 'rotate(360deg)';
-            coin.style.transition = 'transform 0.5s';
-            setTimeout(function() {
-                coin.style.transform = 'rotate(0deg)';
-            }, 500);
+                isFlipping = false;
+            }, 800);
         }
     </script>
 </body>
