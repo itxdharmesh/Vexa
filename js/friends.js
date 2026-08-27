@@ -168,4 +168,47 @@ async function rejectRequest(fromUserId) {
     try {
         await database.ref('friendRequests/' + currentUser.uid + '/' + fromUserId).remove();
         Utils.showToast('Request rejected', 'info');
-        loadFriendRequests
+        loadFriendRequests();
+    } catch (error) {
+        console.error('Error rejecting request:', error);
+    }
+}
+
+async function removeFriend(friendId) {
+    if (!confirm('Remove this friend?')) return;
+    
+    try {
+        await database.ref('friends/' + currentUser.uid + '/' + friendId).remove();
+        await database.ref('friends/' + friendId + '/' + currentUser.uid).remove();
+        Utils.showToast('Friend removed', 'info');
+        loadFriends();
+        loadSuggestions();
+    } catch (error) {
+        console.error('Error removing friend:', error);
+    }
+}
+
+function messageFriend(friendId, displayName) {
+    sessionStorage.setItem('chatUserId', friendId);
+    sessionStorage.setItem('chatUserName', displayName);
+    window.location.href = 'chat-window.html';
+}
+
+function viewProfile(userId) {
+    window.location.href = 'user-profile.html?uid=' + userId;
+}
+
+async function sendRequest(userId) {
+    try {
+        await database.ref('friendRequests/' + userId + '/' + currentUser.uid).set({
+            from: currentUser.uid,
+            to: userId,
+            status: 'pending',
+            createdAt: Date.now()
+        });
+        Utils.showToast('Friend request sent!', 'success');
+        loadSuggestions();
+    } catch (error) {
+        console.error('Error sending request:', error);
+    }
+}
