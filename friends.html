@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Friends</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+    <div class="app-header">
+        <a href="account.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
+        <span style="font-weight:600;">👥 Friends</span>
+        <span></span>
+    </div>
+
+    <div class="container">
+        <!-- Friend Requests -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">Friend Requests</h3>
+            <div id="friend-requests"></div>
+        </div>
+        
+        <!-- My Friends -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">My Friends</h3>
+            <div id="friends-list"></div>
+        </div>
+        
+        <!-- Suggested -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">Suggested People</h3>
+            <div id="suggested-people"></div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
+        <a href="games.html" class="nav-item"><span class="nav-icon">🎮</span><span>Games</span></a>
+        <a href="search.html" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span></a>
+        <a href="chat.html" class="nav-item"><span class="nav-icon">💬</span><span>Chat</span></a>
+        <a href="account.html" class="nav-item"><span class="nav-icon">👤</span><span>Account</span></a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/friends.js"></script>
+</body>
+</html>
