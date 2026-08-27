@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Reaction Rush</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        .reaction-area {
+            width: 100%; max-width: 400px; height: 300px; margin: 16px auto;
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s; font-size: 24px; font-weight: 700;
+        }
+        .waiting { background: rgba(239,68,68,0.2); border: 2px solid #EF4444; }
+        .ready { background: rgba(16,185,129,0.2); border: 2px solid #10B981; }
+        .idle { background: var(--bg-card); border: 2px solid var(--border); }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <a href="../games.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
+        <span style="font-weight:600;">⚡ Reaction Rush</span>
+        <span></span>
+    </div>
+
+    <div style="max-width:400px;margin:0 auto;padding:16px;">
+        <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
+            <div class="stat-card">
+                <div class="stat-value" id="best-time">--</div>
+                <div class="stat-label">Best Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="attempts">0</div>
+                <div class="stat-label">Attempts</div>
+            </div>
+        </div>
+
+        <div class="reaction-area idle" id="reaction-area" onclick="handleClick()">
+            CLICK TO START
+        </div>
+
+        <div id="result" style="text-align:center;font-size:18px;font-weight:600;margin:12px 0;"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        let currentUser = null;
+        let state = 'idle', startTime = null, timeoutId = null;
+        let bestTime = null, attempts = 0;
+        
+        auth.onAuthStateChanged(function(user) {
+            if (!user) { window.location.replace('../login.html'); return; }
+            currentUser = user;
+            loadStats();
+        });
+        
+        async function loadStats() {
+            var snapshot = await database.ref('gameStats/' + currentUser.uid + '/reaction-rush').once('value');
+            var stats = snapshot.val();
+            if (stats) {
+                bestTime = stats.highScore || null;
+                attempts = stats.gamesPlayed || 0;
+                document.getElementById('best-time').textContent = bestTime ? bestTime + 'ms' : '--';
+                document.getElementById('attempts').textContent = attempts;
+            }
+        }
+        
+        function handleClick() {
+            var area = document.getElementById('reaction-area');
+            
+            if (state === 'idle') {
+                state = 'waiting';
+                area.className = 'reaction-area waiting';
+                area.textContent = 'WAIT FOR GREEN...';
+                document.getElementById('result').textContent = '';
+                
+                var delay = Math.random() * 2000 + 1500;
+                timeoutId = setTimeout(function() {
+                    state = 'ready';
+                    area.className = 'reaction-area ready';
+                    area.textContent = 'TAP NOW!';
+                    startTime = Date.now();
+                }, delay);
+                
+            } else if (state === 'waiting') {
+                clearTimeout(timeoutId);
+                state = 'idle';
+                area.className = 'reaction-area idle';
+                area.textContent = 'TOO EARLY! TAP TO RETRY';
+                document.getElementById('result').textContent = '❌ Too early!';
+                document.getElementById('result').style.color = '#EF4444';
+                
+            } else if (state === 'ready') {
+                var reactionTime = Date.now() - startTime;
+                state = 'idle';
+                area.className = 'reaction-area idle';
+                area.textContent = 'CLICK TO START';
+                attempts++;
+                
+                if (!bestTime || reactionTime < bestTime) {
+                    bestTime = reactionTime;
+                    document.getElementById('best-time').textContent = bestTime + 'ms';
+                }
+                document.getElementById('attempts').textContent = attempts;
+                
+                var reward = reactionTime < 200 ? 20 : reactionTime < 300 ? 15 : reactionTime < 500 ? 10 : 5;
+                
+                document.getElementById('result').textContent = reactionTime + 'ms - +' + reward + ' coins!';
+                document.getElementById('result').style.color = '#10B981';
+                
+                saveStats(reactionTime, reward);
+            }
+        }
+        
+        async function saveStats(reactionTime, reward) {
+            var gameRef = database.ref('gameStats/' + currentUser.uid + '/reaction-rush');
+            await gameRef.update({
+                highScore: bestTime,
+                gamesPlayed: attempts
+            });
+            
+            var progressRef = database.ref('progress/' + currentUser.uid);
+            var snapshot = await progressRef.once('value');
+            var progress = snapshot.val() || { coins: 0, xp: 0 };
+            await progressRef.update({ xp: progress.xp + 10, coins: progress.coins + reward });
+        }
+    </script>
+</body>
+</html>
