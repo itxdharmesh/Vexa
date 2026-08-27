@@ -4,225 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Home</title>
-    <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Exo 2', sans-serif;
-            background: #0A0A0F;
-            color: white;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 24px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #FFFFFF, #00D4FF);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .welcome-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 20px;
-        }
-        
-        .welcome-text {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #00D4FF;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #6b6b80;
-            margin-top: 4px;
-        }
-        
-        .nav-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px;
-            background: #12121a;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .nav-item {
-            color: #6b6b80;
-            text-decoration: none;
-            font-size: 12px;
-            text-align: center;
-        }
-        
-        .nav-icon {
-            font-size: 24px;
-            display: block;
-        }
-        
-        .logout-btn {
-            padding: 8px 16px;
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid #ef4444;
-            border-radius: 8px;
-            color: #ef4444;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 600;
-        }
-    </style>
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
-    <div class="header">
-        <div class="logo">VEXA</div>
-        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+    <div class="app-header">
+        <a href="home.html" class="app-logo">VEXA</a>
+        <a href="notifications.html" style="text-decoration:none;font-size:22px;">🔔</a>
     </div>
-    
-    <div class="welcome-card">
-        <div class="welcome-text" id="welcome-text">Welcome!</div>
-        <p style="color: #6b6b80;" id="user-email">Loading...</p>
-    </div>
-    
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-value" id="coins">0</div>
-            <div class="stat-label">🪙 Coins</div>
+
+    <div class="container">
+        <div class="card" style="padding:16px;">
+            <h2 id="welcome-text" style="font-size:20px;margin-bottom:4px;">Welcome back!</h2>
+            <p id="user-email" style="color:var(--text-muted);font-size:13px;">Loading...</p>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" id="xp">0</div>
-            <div class="stat-label">⭐ XP</div>
+
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="home-coins">0</div>
+                <div class="stat-label">🪙 Coins</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="home-xp">0</div>
+                <div class="stat-label">⭐ XP</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="home-level">1</div>
+                <div class="stat-label">🏆 Level</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="home-streak">0</div>
+                <div class="stat-label">🔥 Streak</div>
+            </div>
+        </div>
+
+        <!-- Daily Reward -->
+        <div class="card" id="daily-reward-card">
+            <h3 style="font-size:16px;margin-bottom:12px;">🎁 Daily Reward</h3>
+            <div id="daily-reward-content">
+                <p style="font-size:14px;color:var(--text-secondary);">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Play Now -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">🎮 Play Now</h3>
+            <div id="featured-games" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;"></div>
+        </div>
+
+        <!-- Friends Activity -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">👥 Friends Activity</h3>
+            <div id="friends-activity">
+                <div class="empty-state">
+                    <div class="empty-state-icon">👥</div>
+                    <div class="empty-state-title">No activity yet</div>
+                    <div class="empty-state-text">Add friends and start playing!</div>
+                    <a href="friends.html" class="btn btn-primary btn-small">FIND FRIENDS</a>
+                </div>
+            </div>
         </div>
     </div>
-    
-    <div class="nav-bar">
-        <a href="home.html" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            Home
-        </a>
-        <a href="games.html" class="nav-item">
-            <span class="nav-icon">🎮</span>
-            Games
-        </a>
-        <a href="chat.html" class="nav-item">
-            <span class="nav-icon">💬</span>
-            Chat
-        </a>
-        <a href="account.html" class="nav-item">
-            <span class="nav-icon">👤</span>
-            Account
-        </a>
-    </div>
+
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item active"><span class="nav-icon">🏠</span><span>Home</span></a>
+        <a href="games.html" class="nav-item"><span class="nav-icon">🎮</span><span>Games</span></a>
+        <a href="search.html" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span></a>
+        <a href="chat.html" class="nav-item"><span class="nav-icon">💬</span><span>Chat</span></a>
+        <a href="account.html" class="nav-item"><span class="nav-icon">👤</span><span>Account</span></a>
+    </nav>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
-    <script>
-        console.log('Home page loaded');
-        
-        // Check auth state
-        auth.onAuthStateChanged((user) => {
-            console.log('Auth state:', user ? 'Logged in' : 'Not logged in');
-            
-            if (!user) {
-                console.log('No user, redirecting to login...');
-                window.location.replace('login.html');
-                return;
-            }
-            
-            console.log('User ID:', user.uid);
-            document.getElementById('user-email').textContent = user.email;
-            
-            // Load user data
-            database.ref(`users/${user.uid}`).once('value')
-                .then((snapshot) => {
-                    const userData = snapshot.val();
-                    console.log('User data:', userData);
-                    
-                    if (userData) {
-                        document.getElementById('welcome-text').textContent = 
-                            `Welcome back, @${userData.username} 👋`;
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error loading user data:', error);
-                });
-            
-            // Load progress
-            database.ref(`usersProgress/${user.uid}`).once('value')
-                .then((snapshot) => {
-                    const progress = snapshot.val();
-                    console.log('Progress:', progress);
-                    
-                    if (progress) {
-                        document.getElementById('coins').textContent = progress.coins || 0;
-                        document.getElementById('xp').textContent = progress.totalXP || 0;
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error loading progress:', error);
-                });
-        });
-        
-        async function logout() {
-            try {
-                await auth.signOut();
-                console.log('Logged out successfully');
-                window.location.replace('login.html');
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-        }
-    </script>
+    <script src="js/utils.js"></script>
+    <script src="js/home.js"></script>
 </body>
 </html>
