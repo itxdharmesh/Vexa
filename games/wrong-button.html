@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Wrong Button</title>
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+    <div class="app-header">
+        <a href="../games.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
+        <span style="font-weight:600;">🚫 Wrong Button</span>
+        <span></span>
+    </div>
+
+    <div style="max-width:400px;margin:0 auto;padding:16px;text-align:center;">
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="stat-card"><div class="stat-value" id="score">0</div><div class="stat-label">Score</div></div>
+            <div class="stat-card"><div class="stat-value" id="time">20s</div><div class="stat-label">Time</div></div>
+            <div class="stat-card"><div class="stat-value" id="best">0</div><div class="stat-label">Best</div></div>
+        </div>
+
+        <div class="card" style="margin:16px 0;padding:24px;">
+            <p style="font-size:16px;color:var(--text-secondary);">DON'T press the wrong button!</p>
+            <h2 style="font-size:28px;margin:12px 0;" id="instruction">PRESS RED</h2>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;" id="buttons-grid"></div>
+
+        <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="startGame()">START GAME</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        let currentUser = null;
+        let score = 0, timeLeft = 20, bestScore = 0, gameActive = false, timerInterval = null;
+        let correctColor = 'red';
+        const colors = [
+            { name: 'RED', color: '#EF4444', isCorrect: false },
+            { name: 'BLUE', color: '#00D4FF', isCorrect: false },
+            { name: 'GREEN', color: '#10B981', isCorrect: false },
+            { name: 'YELLOW', color: '#FFD700', isCorrect: false }
+        ];
+
+        auth.onAuthStateChanged(async function(user) {
+            if (!user) { window.location.replace('../login.html'); return; }
+            currentUser = user;
+            var snapshot = await database.ref('gameStats/' + user.uid + '/wrong-button').once('value');
+            var stats = snapshot.val();
+            if (stats) { bestScore = stats.highScore || 0; document.getElementById('best').textContent = bestScore; }
+        });
+
+        function startGame() {
+            score = 0; timeLeft = 20; gameActive = true;
+            document.getElementById('score').textContent = score;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                document.getElementById('time').textContent = timeLeft + 's';
+                if (timeLeft <= 0) endGame();
+            }, 1000);
+            newRound();
+        }
+
+        function newRound() {
+            if (!gameActive) return;
+            var shuffled = [...colors].sort(function() { return Math.random() - 0.5; });
+            correctColor = shuffled[0].color;
+            document.getElementById('instruction').textContent = 'PRESS ' + shuffled[0].name;
+            
+            document.getElementById('buttons-grid').innerHTML = shuffled.map(function(c) {
+                return '<button style="padding:20px;border:none;border-radius:12px;background:' + c.color + ';cursor:pointer;font-size:16px;font-weight:700;color:white;" onclick="pressButton(\'' + c.color + '\')">' + c.name + '</button>';
+            }).join('');
+        }
+
+        function pressButton(color) {
+            if (!gameActive) return;
+            if (color === correctColor) {
+                score++;
+                document.getElementById('score').textContent = score;
+                newRound();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            if (score > bestScore) { bestScore = score; document.getElementById('best').textContent = bestScore; }
+            var xpEarned = score;
+            var coinsEarned = Math.floor(score / 2);
+            showGameEnd(score, xpEarned, coinsEarned);
+        }
+
+        function showGameEnd(score, xpEarned, coinsEarned) {
+            var overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            overlay.innerHTML = `
+                <div style="background:var(--bg-card);border:2px solid var(--accent-purple);border-radius:20px;padding:30px;text-align:center;max-width:320px;width:100%;">
+                    <div style="font-size:48px;">🚫</div>
+                    <h2 style="font-size:22px;margin:8px 0;">Score: ${score}</h2>
+                    <div style="display:flex;gap:10px;margin:16px 0;">
+                        <div style="background:var(--bg-primary);padding:12px;border-radius:10px;flex:1;">
+                            <div style="font-size:20px;font-weight:700;color:var(--accent-blue);">+${xpEarned}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">⭐ XP</div>
+                        </div>
+                        <div style="background:var(--bg-primary);padding:12px;border-radius:10px;flex:1;">
+                            <div style="font-size:20px;font-weight:700;color:#FFD700;">+${coinsEarned}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">🪙 Coins</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;margin-bottom:8px;" onclick="claimReward(${xpEarned},${coinsEarned},${score})">CLAIM</button>
+                    <button class="btn btn-secondary" style="width:100%;" onclick="window.location.replace('../games.html')">GAMES HUB</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        async function claimReward(xpEarned, coinsEarned, score) {
+            var progressRef = database.ref('progress/' + currentUser.uid);
+            var snapshot = await progressRef.once('value');
+            var progress = snapshot.val() || { coins: 0, xp: 0 };
+            await progressRef.update({ xp: progress.xp + xpEarned, coins: progress.coins + coinsEarned });
+            await database.ref('gameStats/' + currentUser.uid + '/wrong-button').update({ gamesPlayed: firebase.database.ServerValue.increment(1), highScore: bestScore });
+            Utils.showToast('Reward claimed!', 'success');
+            setTimeout(function() { window.location.replace('../games.html'); }, 1000);
+        }
+    </script>
+</body>
+</html>
