@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Search</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+    <div class="app-header">
+        <a href="home.html" class="app-logo">VEXA</a>
+        <span style="font-size:20px;">🔍</span>
+    </div>
+
+    <div class="container">
+        <h2 style="font-size:20px;margin-bottom:12px;">Search</h2>
+        
+        <!-- Search Bar -->
+        <div style="position:relative;margin-bottom:16px;">
+            <input type="text" id="search-input" class="input-field" placeholder="🔍 Search users or games..." style="padding-left:16px;">
+            <button onclick="clearSearch()" id="clear-btn" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;">✕</button>
+        </div>
+        
+        <!-- Tabs -->
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <button id="tab-users" class="btn btn-primary btn-small" onclick="switchTab('users')">USERS</button>
+            <button id="tab-games" class="btn btn-secondary btn-small" onclick="switchTab('games')">GAMES</button>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loading-state" style="display:none;text-align:center;padding:40px;">
+            <div style="font-size:32px;margin-bottom:8px;">🔍</div>
+            <p style="color:var(--text-muted);">Searching...</p>
+        </div>
+        
+        <!-- Results -->
+        <div id="search-results"></div>
+        
+        <!-- No Results -->
+        <div id="no-results" style="display:none;" class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-title">No results found</div>
+            <div class="empty-state-text">Try a different search term</div>
+        </div>
+        
+        <!-- Initial State -->
+        <div id="initial-state" class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-title">Search Users & Games</div>
+            <div class="empty-state-text">Type to find friends and games</div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
+        <a href="games.html" class="nav-item"><span class="nav-icon">🎮</span><span>Games</span></a>
+        <a href="search.html" class="nav-item active"><span class="nav-icon">🔍</span><span>Search</span></a>
+        <a href="chat.html" class="nav-item"><span class="nav-icon">💬</span><span>Chat</span></a>
+        <a href="account.html" class="nav-item"><span class="nav-icon">👤</span><span>Account</span></a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>
