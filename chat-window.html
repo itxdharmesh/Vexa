@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA - Chat</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+    <div class="app-header">
+        <a href="chat.html" style="text-decoration:none;color:var(--text-primary);font-size:20px;">←</a>
+        <div id="chat-user-info" style="display:flex;align-items:center;gap:8px;">
+            <div class="avatar avatar-small" id="chat-avatar">?</div>
+            <span id="chat-user-name" style="font-weight:600;">Chat</span>
+        </div>
+        <span id="online-indicator" style="font-size:12px;color:var(--text-muted);">●</span>
+    </div>
+
+    <div class="container" style="padding-bottom:80px;">
+        <div id="messages-area" style="display:flex;flex-direction:column;gap:8px;padding:12px 0;"></div>
+    </div>
+
+    <div style="position:fixed;bottom:70px;left:0;right:0;padding:12px;background:var(--bg-secondary);border-top:1px solid var(--border);display:flex;gap:8px;">
+        <input type="text" id="message-input" class="input-field" placeholder="Type a message..." style="flex:1;">
+        <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+        let currentUser = null;
+        let chatUserId = sessionStorage.getItem('chatUserId');
+        let chatUserName = sessionStorage.getItem('chatUserName');
+        
+        if (!chatUserId) {
+            window.location.replace('chat.html');
+        }
+        
+        document.getElementById('chat-user-name').textContent = chatUserName;
+        document.getElementById('chat-avatar').textContent = chatUserName.charAt(0).toUpperCase();
+        
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                window.location.replace('login.html');
+                return;
+            }
+            currentUser = user;
+            loadMessages();
+            listenToMessages();
+            checkPresence();
+        });
+        
+        function getChatId() {
+            var participants = [currentUser.uid, chatUserId].sort();
+            return participants.join('_');
+        }
+        
+        async function loadMessages() {
+            var chatId = getChatId();
+            var messagesRef = database.ref('chats/' + chatId + '/messages');
+            
+            var snapshot = await messagesRef.once('value');
+            var messages = snapshot.val() || {};
+            
+            var messagesArea = document.getElementById('messages-area');
+            messagesArea.innerHTML = '';
+            
+            Object.entries(messages).forEach(function([messageId, message]) {
+                displayMessage(messageId, message);
+            });
+            
+            scrollToBottom();
+        }
+        
+        function listenToMessages() {
+            var chatId = getChatId();
+            var messagesRef = database.ref('chats/' + chatId + '/messages');
+            
+            messagesRef.on('child_added', function(snapshot) {
+                var message = snapshot.val();
+                var existing = document.getElementById('msg-' + snapshot.key);
+                if (!existing) {
+                    displayMessage(snapshot.key, message);
+                    scrollToBottom();
+                }
+            });
+        }
+        
+        function displayMessage(messageId, message) {
+            var messagesArea = document.getElementById('messages-area');
+            var isSent = message.senderId === currentUser.uid;
+            
+            var messageDiv = document.createElement('div');
+            messageDiv.id = 'msg-' + messageId;
+            messageDiv.style.cssText = `
+                max-width: 75%;
+                padding: 10px 14px;
+                border-radius: 12px;
+                align-self: ${isSent ? 'flex-end' : 'flex-start'};
+                background: ${isSent ? 'linear-gradient(135deg, #6C3CE1, #00D4FF)' : '#1A1A2E'};
+                color: white;
+                font-size: 14px;
+                word-wrap: break-word;
+            `;
+            
+            messageDiv.innerHTML = `
+                ${message.text}
+                <div style="font-size:10px;opacity:0.7;margin-top:4px;">${Utils.timeAgo(message.createdAt)}</div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+        }
+        
+        async function sendMessage() {
+            var input = document.getElementById('message-input');
+            var text = input.value.trim();
+            
+            if (!text) return;
+            
+            var chatId = getChatId();
+            var messageRef = database.ref('chats/' + chatId + '/messages').push();
+            
+            var message = {
+                senderId: currentUser.uid,
+                text: text,
+                createdAt: Date.now(),
+                expiresAt: Date.now() + 86400000
+            };
+            
+            await messageRef.set(message);
+            
+            // Ensure participants are set
+            await database.ref('chats/' + chatId + '/participants').update({
+                [currentUser.uid]: true,
+                [chatUserId]: true
+            });
+            
+            // Save to IndexedDB
+            Utils.saveToIndexedDB('chats', messageRef.key, message);
+            
+            input.value = '';
+        }
+        
+        function checkPresence() {
+            var presenceRef = database.ref('presence/' + chatUserId);
+            presenceRef.on('value', function(snapshot) {
+                var presence = snapshot.val();
+                var indicator = document.getElementById('online-indicator');
+                if (presence && presence.online) {
+                    indicator.textContent = '● Online';
+                    indicator.style.color = '#10B981';
+                } else {
+                    indicator.textContent = '● Offline';
+                    indicator.style.color = '#6B6B80';
+                }
+            });
+        }
+        
+        function scrollToBottom() {
+            var messagesArea = document.getElementById('messages-area');
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+        
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
