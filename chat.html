@@ -4,186 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Chat</title>
-    <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/vexa-brand.css">
     <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <style>
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 120px);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-        }
-        
-        .chat-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 16px;
-        }
-        
-        .chat-list-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--vexa-glass);
-            border: 1px solid var(--vexa-glass-border);
-            border-radius: var(--vexa-radius-md);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .chat-list-item:hover {
-            border-color: var(--vexa-primary);
-            box-shadow: 0 0 15px rgba(108, 60, 225, 0.3);
-        }
-        
-        .messages-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .message {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: var(--vexa-radius-md);
-            position: relative;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .message-sent {
-            align-self: flex-end;
-            background: linear-gradient(135deg, var(--vexa-primary), var(--vexa-secondary));
-            color: white;
-        }
-        
-        .message-received {
-            align-self: flex-start;
-            background: var(--vexa-glass);
-            border: 1px solid var(--vexa-glass-border);
-        }
-        
-        .message-time {
-            font-size: 10px;
-            opacity: 0.7;
-            margin-top: 4px;
-            display: block;
-        }
-        
-        .message-input-container {
-            display: flex;
-            gap: 8px;
-            padding: 16px;
-            background: var(--vexa-glass);
-            border-top: 1px solid var(--vexa-glass-border);
-        }
-        
-        .message-input {
-            flex: 1;
-            padding: 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--vexa-radius-md);
-            color: var(--text-primary);
-            font-size: 14px;
-            font-family: 'Exo 2', sans-serif;
-        }
-        
-        .message-input:focus {
-            outline: none;
-            border-color: var(--vexa-primary);
-        }
-        
-        .online-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        
-        .online {
-            background: #10b981;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-        }
-        
-        .offline {
-            background: #6b6b80;
-        }
-    </style>
 </head>
 <body>
-    <div class="vexa-bg-pattern"></div>
-    
-    <div class="container chat-container">
-        <header class="chat-header">
-            <a href="home.html" class="vexa-logo">
-                <div class="vexa-logo-icon"></div>
-            </a>
-            <h1 class="vexa-title" style="font-size: 24px;">💬 Chat</h1>
-        </header>
+    <div class="app-header">
+        <a href="home.html" class="app-logo">VEXA</a>
+        <span style="font-size:20px;">💬</span>
+    </div>
+
+    <div class="container">
+        <h2 style="font-size:20px;margin-bottom:12px;">Chat</h2>
         
-        <!-- Chat List -->
-        <div id="chat-list" class="chat-list"></div>
+        <!-- Chat Search -->
+        <input type="text" id="chat-search" class="input-field" placeholder="🔍 Search conversations..." style="margin-bottom:16px;">
         
-        <!-- Chat Window -->
-        <div id="chat-window" style="display: none; flex-direction: column; flex: 1;">
-            <button class="btn btn-secondary" onclick="closeChat()" style="align-self: flex-start;">← Back</button>
-            <div id="chat-header" style="display: flex; align-items: center; gap: 12px; padding: 16px;"></div>
-            <div class="messages-area" id="messages-area"></div>
-            <div class="message-input-container">
-                <input type="text" class="message-input" id="message-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
-                <button class="btn btn-primary" onclick="sendMessage()">Send</button>
-            </div>
+        <!-- Conversation List -->
+        <div id="conversation-list"></div>
+        
+        <!-- Empty State -->
+        <div id="empty-chat" class="empty-state" style="display:none;">
+            <div class="empty-state-icon">💬</div>
+            <div class="empty-state-title">No conversations yet</div>
+            <div class="empty-state-text">Search for someone and start chatting!</div>
+            <a href="search.html" class="btn btn-primary">FIND PEOPLE</a>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav vexa-nav">
-        <a href="home.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="games.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">🎮</span>
-            <span>Games</span>
-        </a>
-        <a href="chat.html" class="nav-item vexa-nav-item active">
-            <span class="nav-icon">💬</span>
-            <span>Chat</span>
-        </a>
-        <a href="account.html" class="nav-item vexa-nav-item">
-            <span class="nav-icon">👤</span>
-            <span>Account</span>
-        </a>
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
+        <a href="games.html" class="nav-item"><span class="nav-icon">🎮</span><span>Games</span></a>
+        <a href="search.html" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span></a>
+        <a href="chat.html" class="nav-item active"><span class="nav-icon">💬</span><span>Chat</span></a>
+        <a href="account.html" class="nav-item"><span class="nav-icon">👤</span><span>Account</span></a>
     </nav>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
     <script src="js/chat.js"></script>
 </body>
 </html>
