@@ -4,304 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Sign Up</title>
-    <link rel="icon" type="image/svg+xml" href="assets/logo/vexa-icon.svg">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/vexa-brand.css">
     <link rel="stylesheet" href="css/global.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Exo 2', sans-serif;
-            background: #0A0A0F;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .auth-box {
-            width: 100%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 40px;
-        }
-        
-        .auth-logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .auth-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #FFFFFF, #00D4FF);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-        
-        .auth-subtitle {
-            color: #a0a0b8;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 16px;
-        }
-        
-        .input-group {
-            margin-bottom: 16px;
-        }
-        
-        .input-label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #a0a0b8;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 600;
-        }
-        
-        .input-field {
-            width: 100%;
-            padding: 12px 16px;
-            background: #12121a;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: white;
-            font-size: 14px;
-            font-family: 'Exo 2', sans-serif;
-        }
-        
-        .input-field:focus {
-            outline: none;
-            border-color: #6C3CE1;
-            box-shadow: 0 0 0 3px rgba(108, 60, 225, 0.4);
-        }
-        
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #6C3CE1, #00D4FF);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(108, 60, 225, 0.5);
-        }
-        
-        .auth-footer {
-            text-align: center;
-            margin-top: 24px;
-            color: #a0a0b8;
-            font-size: 14px;
-        }
-        
-        .auth-footer a {
-            color: #00D4FF;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid #ef4444;
-            color: #ef4444;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            display: none;
-            font-size: 14px;
-        }
-        
-        .success-message {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid #10b981;
-            color: #10b981;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            display: none;
-            font-size: 14px;
-        }
-        
-        .username-hint {
-            font-size: 11px;
-            color: #6b6b80;
-            margin-top: 4px;
-        }
-    </style>
 </head>
 <body>
-    <div class="auth-box">
-        <div class="auth-logo">
-            <h1 class="auth-title">VEXA</h1>
-            <p class="auth-subtitle">Join the future of gaming</p>
-        </div>
-        
-        <div class="error-message" id="error-message"></div>
-        <div class="success-message" id="success-message"></div>
-        
-        <form id="signup-form">
-            <div class="input-group">
-                <label class="input-label">Username</label>
-                <input type="text" class="input-field" id="username" placeholder="Choose a username" required>
-                <p class="username-hint">Only letters, numbers, dots (.) and underscores (_)</p>
-            </div>
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;">
+        <div class="card" style="width:100%;max-width:380px;padding:32px;">
+            <h1 style="text-align:center;color:var(--accent-blue);font-size:28px;margin-bottom:4px;">VEXA</h1>
+            <p style="text-align:center;color:var(--text-muted);margin-bottom:24px;font-size:14px;">Join the future of gaming</p>
             
-            <div class="input-group">
-                <label class="input-label">Display Name</label>
-                <input type="text" class="input-field" id="displayName" placeholder="Your display name" required>
-            </div>
+            <div id="error-box" style="display:none;background:rgba(239,68,68,0.1);border:1px solid #EF4444;color:#EF4444;padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
             
-            <div class="input-group">
-                <label class="input-label">Email</label>
-                <input type="email" class="input-field" id="email" placeholder="Enter your email" required>
-            </div>
+            <form id="signup-form">
+                <div style="margin-bottom:14px;">
+                    <label style="display:block;margin-bottom:6px;color:var(--text-secondary);font-size:13px;">Username</label>
+                    <input type="text" id="username" class="input-field" placeholder="Choose username" required>
+                    <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Letters, numbers, dots, underscores only</p>
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block;margin-bottom:6px;color:var(--text-secondary);font-size:13px;">Display Name</label>
+                    <input type="text" id="displayName" class="input-field" placeholder="Your name" required>
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block;margin-bottom:6px;color:var(--text-secondary);font-size:13px;">Email</label>
+                    <input type="email" id="email" class="input-field" placeholder="Enter email" required>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="display:block;margin-bottom:6px;color:var(--text-secondary);font-size:13px;">Password</label>
+                    <input type="password" id="password" class="input-field" placeholder="Create password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">CREATE ACCOUNT</button>
+            </form>
             
-            <div class="input-group">
-                <label class="input-label">Password</label>
-                <input type="password" class="input-field" id="password" placeholder="Create a password" required>
-            </div>
-            
-            <button type="submit" class="btn-primary">CREATE ACCOUNT</button>
-        </form>
-        
-        <div class="auth-footer">
-            Already have an account? <a href="login.html">Login</a>
+            <p style="text-align:center;margin-top:16px;color:var(--text-muted);font-size:13px;">
+                Already have an account? <a href="login.html" style="color:var(--accent-blue);text-decoration:none;font-weight:600;">Login</a>
+            </p>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
     <script>
-        // Check if already logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log('Already logged in, redirecting to home...');
-                window.location.replace('home.html');
-            }
-        });
-        
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        document.getElementById('signup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
+            var username = document.getElementById('username').value.trim().toLowerCase();
+            var displayName = document.getElementById('displayName').value.trim();
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var errorBox = document.getElementById('error-box');
+            errorBox.style.display = 'none';
             
-            const username = document.getElementById('username').value.trim();
-            const displayName = document.getElementById('displayName').value.trim();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            const errorMessage = document.getElementById('error-message');
-            const successMessage = document.getElementById('success-message');
-            
-            // Hide messages
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-            
-            // Validate username
-            const usernameRegex = /^[a-zA-Z0-9._]+$/;
+            var usernameRegex = /^[a-zA-Z0-9._]+$/;
             if (!usernameRegex.test(username)) {
-                errorMessage.textContent = 'Username can only contain letters, numbers, dots, and underscores';
-                errorMessage.style.display = 'block';
+                errorBox.textContent = 'Username can only contain letters, numbers, dots, underscores';
+                errorBox.style.display = 'block';
                 return;
             }
             
-            if (username.length < 3) {
-                errorMessage.textContent = 'Username must be at least 3 characters';
-                errorMessage.style.display = 'block';
+            if (username.length < 3 || username.length > 20) {
+                errorBox.textContent = 'Username must be 3-20 characters';
+                errorBox.style.display = 'block';
                 return;
             }
             
             try {
-                console.log('Creating account...');
-                
-                // Check username uniqueness
-                const usernameSnapshot = await database.ref(`usernames/${username.toLowerCase()}`).once('value');
-                
+                var usernameSnapshot = await database.ref('usernames/' + username).once('value');
                 if (usernameSnapshot.exists()) {
-                    errorMessage.textContent = 'Username already taken';
-                    errorMessage.style.display = 'block';
+                    errorBox.textContent = 'Username already taken';
+                    errorBox.style.display = 'block';
                     return;
                 }
                 
-                // Create user
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
+                var result = await auth.createUserWithEmailAndPassword(email, password);
+                var user = result.user;
                 
-                console.log('Account created:', user.uid);
-                
-                // Save user data
-                await database.ref(`users/${user.uid}`).set({
-                    username: username.toLowerCase(),
+                await database.ref('users/' + user.uid).set({
+                    username: username,
                     displayName: displayName,
                     email: email,
-                    createdAt: Date.now(),
-                    avatarColor: 'linear-gradient(135deg, #6C3CE1, #00D4FF)'
-                });
-                
-                // Reserve username
-                await database.ref(`usernames/${username.toLowerCase()}`).set(user.uid);
-                
-                // Initialize progress
-                await database.ref(`usersProgress/${user.uid}`).set({
-                    totalXP: 0,
-                    level: 1,
-                    coins: 100,
+                    bio: '',
+                    avatarURL: '',
                     createdAt: Date.now()
                 });
                 
-                // Initialize streak
-                await database.ref(`streaks/${user.uid}`).set({
+                await database.ref('usernames/' + username).set(user.uid);
+                
+                await database.ref('progress/' + user.uid).set({
+                    coins: 100,
+                    xp: 0,
+                    level: 1
+                });
+                
+                await database.ref('streaks/' + user.uid).set({
                     currentStreak: 1,
                     bestStreak: 1,
                     lastActiveAt: Date.now()
                 });
                 
-                console.log('User data saved successfully');
-                
-                // Show success message
-                successMessage.textContent = 'Account created! Redirecting...';
-                successMessage.style.display = 'block';
-                
-                // Redirect to home
-                setTimeout(() => {
-                    window.location.replace('home.html');
-                }, 500);
+                window.location.replace('home.html');
                 
             } catch (error) {
-                console.error('Signup error:', error);
-                
-                const errorMessages = {
+                var messages = {
                     'auth/email-already-in-use': 'Email already registered',
                     'auth/invalid-email': 'Invalid email',
-                    'auth/weak-password': 'Password is too weak',
-                    'auth/network-request-failed': 'Network error'
+                    'auth/weak-password': 'Password too weak (min 6 characters)'
                 };
-                
-                errorMessage.textContent = errorMessages[error.code] || error.message || 'Signup failed';
-                errorMessage.style.display = 'block';
+                errorBox.textContent = messages[error.code] || error.message;
+                errorBox.style.display = 'block';
             }
         });
     </script>
