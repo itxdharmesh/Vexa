@@ -6,14 +6,15 @@
     <title>VEXA - Reaction Rush</title>
     <link rel="stylesheet" href="../css/global.css">
     <style>
+        .game-wrap { max-width: 400px; margin: 0 auto; padding: 16px; }
         .reaction-area {
-            width: 100%; max-width: 400px; height: 300px; margin: 16px auto;
-            border-radius: 16px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s; font-size: 24px; font-weight: 700;
+            width: 100%; height: 300px; margin: 16px 0; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s; font-size: 22px; font-weight: 700;
         }
-        .waiting { background: rgba(239,68,68,0.2); border: 2px solid #EF4444; }
-        .ready { background: rgba(16,185,129,0.2); border: 2px solid #10B981; }
-        .idle { background: var(--bg-card); border: 2px solid var(--border); }
+        .waiting { background: rgba(239,68,68,0.2); border: 2px solid #EF4444; color: #EF4444; }
+        .ready { background: rgba(16,185,129,0.2); border: 2px solid #10B981; color: #10B981; }
+        .idle { background: var(--bg-card); border: 2px solid var(--border); color: var(--text-primary); }
     </style>
 </head>
 <body>
@@ -23,23 +24,15 @@
         <span></span>
     </div>
 
-    <div style="max-width:400px;margin:0 auto;padding:16px;">
+    <div class="game-wrap">
         <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
-            <div class="stat-card">
-                <div class="stat-value" id="best-time">--</div>
-                <div class="stat-label">Best Time</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="attempts">0</div>
-                <div class="stat-label">Attempts</div>
-            </div>
+            <div class="stat-card"><div class="stat-value" id="best-time">--</div><div class="stat-label">Best Time</div></div>
+            <div class="stat-card"><div class="stat-value" id="attempts">0</div><div class="stat-label">Attempts</div></div>
         </div>
 
         <div class="reaction-area idle" id="reaction-area" onclick="handleClick()">
             CLICK TO START
         </div>
-
-        <div id="result" style="text-align:center;font-size:18px;font-weight:600;margin:12px 0;"></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
@@ -51,15 +44,11 @@
         let currentUser = null;
         let state = 'idle', startTime = null, timeoutId = null;
         let bestTime = null, attempts = 0;
-        
-        auth.onAuthStateChanged(function(user) {
+
+        auth.onAuthStateChanged(async function(user) {
             if (!user) { window.location.replace('../login.html'); return; }
             currentUser = user;
-            loadStats();
-        });
-        
-        async function loadStats() {
-            var snapshot = await database.ref('gameStats/' + currentUser.uid + '/reaction-rush').once('value');
+            var snapshot = await database.ref('gameStats/' + user.uid + '/reaction-rush').once('value');
             var stats = snapshot.val();
             if (stats) {
                 bestTime = stats.highScore || null;
@@ -67,8 +56,8 @@
                 document.getElementById('best-time').textContent = bestTime ? bestTime + 'ms' : '--';
                 document.getElementById('attempts').textContent = attempts;
             }
-        }
-        
+        });
+
         function handleClick() {
             var area = document.getElementById('reaction-area');
             
@@ -76,8 +65,6 @@
                 state = 'waiting';
                 area.className = 'reaction-area waiting';
                 area.textContent = 'WAIT FOR GREEN...';
-                document.getElementById('result').textContent = '';
-                
                 var delay = Math.random() * 2000 + 1500;
                 timeoutId = setTimeout(function() {
                     state = 'ready';
@@ -85,15 +72,11 @@
                     area.textContent = 'TAP NOW!';
                     startTime = Date.now();
                 }, delay);
-                
             } else if (state === 'waiting') {
                 clearTimeout(timeoutId);
                 state = 'idle';
                 area.className = 'reaction-area idle';
                 area.textContent = 'TOO EARLY! TAP TO RETRY';
-                document.getElementById('result').textContent = '❌ Too early!';
-                document.getElementById('result').style.color = '#EF4444';
-                
             } else if (state === 'ready') {
                 var reactionTime = Date.now() - startTime;
                 state = 'idle';
@@ -107,26 +90,52 @@
                 }
                 document.getElementById('attempts').textContent = attempts;
                 
-                var reward = reactionTime < 200 ? 20 : reactionTime < 300 ? 15 : reactionTime < 500 ? 10 : 5;
+                var xpEarned = 10;
+                var coinsEarned = reactionTime < 200 ? 20 : reactionTime < 300 ? 15 : reactionTime < 500 ? 10 : 5;
                 
-                document.getElementById('result').textContent = reactionTime + 'ms - +' + reward + ' coins!';
-                document.getElementById('result').style.color = '#10B981';
-                
-                saveStats(reactionTime, reward);
+                showGameEnd(reactionTime, xpEarned, coinsEarned);
             }
         }
-        
-        async function saveStats(reactionTime, reward) {
-            var gameRef = database.ref('gameStats/' + currentUser.uid + '/reaction-rush');
-            await gameRef.update({
-                highScore: bestTime,
-                gamesPlayed: attempts
-            });
-            
-            var progressRef = database.ref('progress/' + currentUser.uid);
-            var snapshot = await progressRef.once('value');
-            var progress = snapshot.val() || { coins: 0, xp: 0 };
-            await progressRef.update({ xp: progress.xp + 10, coins: progress.coins + reward });
+
+        function showGameEnd(reactionTime, xpEarned, coinsEarned) {
+            var overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            overlay.innerHTML = `
+                <div style="background:var(--bg-card);border:2px solid var(--accent-purple);border-radius:20px;padding:30px;text-align:center;max-width:320px;width:100%;">
+                    <div style="font-size:48px;margin-bottom:12px;">⚡</div>
+                    <h2 style="font-size:22px;margin-bottom:4px;">${reactionTime}ms</h2>
+                    <div style="display:flex;gap:10px;justify-content:center;margin:16px 0;">
+                        <div style="background:var(--bg-primary);padding:12px;border-radius:10px;flex:1;">
+                            <div style="font-size:20px;font-weight:700;color:var(--accent-blue);">+${xpEarned}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">⭐ XP</div>
+                        </div>
+                        <div style="background:var(--bg-primary);padding:12px;border-radius:10px;flex:1;">
+                            <div style="font-size:20px;font-weight:700;color:#FFD700;">+${coinsEarned}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">🪙 Coins</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;margin-bottom:8px;" onclick="claimReward(${xpEarned},${coinsEarned},${reactionTime})">CLAIM REWARD</button>
+                    <button class="btn btn-secondary" style="width:100%;" onclick="window.location.replace('../games.html')">GO TO GAMES HUB</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        async function claimReward(xpEarned, coinsEarned, reactionTime) {
+            try {
+                var progressRef = database.ref('progress/' + currentUser.uid);
+                var snapshot = await progressRef.once('value');
+                var progress = snapshot.val() || { coins: 0, xp: 0 };
+                await progressRef.update({ xp: progress.xp + xpEarned, coins: progress.coins + coinsEarned });
+                
+                var gameRef = database.ref('gameStats/' + currentUser.uid + '/reaction-rush');
+                var gameSnapshot = await gameRef.once('value');
+                var stats = gameSnapshot.val() || { gamesPlayed: 0, highScore: 9999 };
+                await gameRef.update({ gamesPlayed: stats.gamesPlayed + 1, highScore: Math.min(stats.highScore, reactionTime) });
+                
+                Utils.showToast('Reward claimed!', 'success');
+                setTimeout(function() { window.location.replace('../games.html'); }, 1000);
+            } catch (error) { console.error('Claim error:', error); }
         }
     </script>
 </body>
