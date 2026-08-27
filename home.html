@@ -13,26 +13,22 @@
     </div>
 
     <div class="container">
-        <div class="card" style="padding:16px;">
-            <h2 id="welcome-text" style="font-size:20px;margin-bottom:4px;">Welcome back!</h2>
-            <p id="user-email" style="color:var(--text-muted);font-size:13px;">Loading...</p>
-        </div>
-
+        <!-- Stats - Primary Dashboard -->
         <div class="stats-grid" id="stats-grid">
             <div class="stat-card">
-                <div class="stat-value" id="home-coins">0</div>
+                <div class="stat-value" id="home-coins">--</div>
                 <div class="stat-label">🪙 Coins</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="home-xp">0</div>
+                <div class="stat-value" id="home-xp">--</div>
                 <div class="stat-label">⭐ XP</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="home-level">1</div>
+                <div class="stat-value" id="home-level">--</div>
                 <div class="stat-label">🏆 Level</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="home-streak">0</div>
+                <div class="stat-value" id="home-streak">--</div>
                 <div class="stat-label">🔥 Streak</div>
             </div>
         </div>
@@ -41,7 +37,16 @@
         <div class="card" id="daily-reward-card">
             <h3 style="font-size:16px;margin-bottom:12px;">🎁 Daily Reward</h3>
             <div id="daily-reward-content">
-                <p style="font-size:14px;color:var(--text-secondary);">Loading...</p>
+                <p style="color:var(--text-muted);font-size:13px;">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Daily Challenge -->
+        <div class="card">
+            <h3 style="font-size:16px;margin-bottom:12px;">🎯 Daily Challenge</h3>
+            <div id="daily-challenge">
+                <p style="color:var(--text-muted);font-size:13px;">Play 3 games today</p>
+                <button class="btn btn-primary btn-small" onclick="playRound()" style="margin-top:8px;">PLAY ROUND</button>
             </div>
         </div>
 
@@ -79,6 +84,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/state.js"></script>
     <script src="js/home.js"></script>
 </body>
 </html>
