@@ -15,13 +15,10 @@
     <div class="container">
         <h2 style="font-size:20px;margin-bottom:12px;">Chat</h2>
         
-        <!-- Chat Search -->
         <input type="text" id="chat-search" class="input-field" placeholder="🔍 Search conversations..." style="margin-bottom:16px;">
         
-        <!-- Conversation List -->
         <div id="conversation-list"></div>
         
-        <!-- Empty State -->
         <div id="empty-chat" class="empty-state" style="display:none;">
             <div class="empty-state-icon">💬</div>
             <div class="empty-state-title">No conversations yet</div>
@@ -41,9 +38,138 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/chat.js"></script>
+    <script>
+        let currentUser = null;
+        let conversations = [];
+
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                window.location.replace('login.html');
+                return;
+            }
+            currentUser = user;
+            loadConversations();
+        });
+
+        async function loadConversations() {
+            var list = document.getElementById('conversation-list');
+            var emptyState = document.getElementById('empty-chat');
+            
+            list.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Loading conversations...</p>';
+            
+            try {
+                var chatsSnapshot = await database.ref('chats').once('value');
+                var chats = chatsSnapshot.val() || {};
+                
+                conversations = [];
+                
+                for (var chatId in chats) {
+                    var chat = chats[chatId];
+                    if (chat.participants && chat.participants[currentUser.uid]) {
+                        var otherUserId = null;
+                        for (var uid in chat.participants) {
+                            if (uid !== currentUser.uid) {
+                                otherUserId = uid;
+                                break;
+                            }
+                        }
+                        
+                        if (otherUserId) {
+                            var userSnapshot = await database.ref('users/' + otherUserId).once('value');
+                            var userData = userSnapshot.val() || {};
+                            
+                            var lastMessage = null;
+                            if (chat.messages) {
+                                var messageKeys = Object.keys(chat.messages);
+                                if (messageKeys.length > 0) {
+                                    var lastKey = messageKeys[messageKeys.length - 1];
+                                    lastMessage = chat.messages[lastKey];
+                                }
+                            }
+                            
+                            conversations.push({
+                                chatId: chatId,
+                                userId: otherUserId,
+                                userData: userData,
+                                lastMessage: lastMessage
+                            });
+                        }
+                    }
+                }
+                
+                if (conversations.length === 0) {
+                    list.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                renderConversations(conversations);
+                
+            } catch (error) {
+                console.error('Chat load error:', error);
+                list.innerHTML = '<p style="text-align:center;color:var(--danger);">Couldn\'t load chats</p>';
+            }
+        }
+
+        function renderConversations(convs) {
+            var list = document.getElementById('conversation-list');
+            
+            list.innerHTML = convs.map(function(conv) {
+                var avatarText = (conv.userData.displayName || '?').charAt(0).toUpperCase();
+                var lastText = conv.lastMessage ? conv.lastMessage.text : 'No messages yet';
+                var lastTime = conv.lastMessage ? Utils.timeAgo(conv.lastMessage.createdAt) : '';
+                
+                return `
+                    <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px;margin-bottom:8px;" onclick="openChat('${conv.userId}', '${conv.userData.displayName || 'User'}')">
+                        <div class="avatar">${avatarText}</div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <span style="font-weight:600;font-size:14px;">${conv.userData.displayName || 'User'}</span>
+                                <span style="font-size:11px;color:var(--text-muted);">${lastTime}</span>
+                            </div>
+                            <div style="font-size:13px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lastText}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('chat-search').addEventListener('input', function(e) {
+            var query = e.target.value.toLowerCase().trim();
+            
+            if (query === '') {
+                renderConversations(conversations);
+                return;
+            }
+            
+            var filtered = conversations.filter(function(conv) {
+                var name = (conv.userData.displayName || '').toLowerCase();
+                var username = (conv.userData.username || '').toLowerCase();
+                return name.includes(query) || username.includes(query);
+            });
+            
+            if (filtered.length === 0) {
+                document.getElementById('conversation-list').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💬</div>
+                        <div class="empty-state-title">No conversation found</div>
+                        <div class="empty-state-text">Try a different name</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            renderConversations(filtered);
+        });
+
+        function openChat(userId, displayName) {
+            sessionStorage.setItem('chatUserId', userId);
+            sessionStorage.setItem('chatUserName', displayName);
+            window.location.href = 'chat-window.html';
+        }
+    </script>
 </body>
 </html>
