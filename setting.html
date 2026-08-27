@@ -5,6 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Settings</title>
     <link rel="stylesheet" href="css/global.css">
+    <style>
+        .settings-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        .settings-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .settings-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        .setting-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+        .toggle.active {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+        }
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.3s;
+        }
+        .toggle.active .toggle-knob {
+            left: 22px;
+        }
+    </style>
 </head>
 <body>
     <div class="app-header">
@@ -13,139 +74,100 @@
         <span></span>
     </div>
 
-    <div class="container">
-        <!-- Appearance -->
-        <div class="card">
-            <h3 style="font-size:16px;margin-bottom:12px;">🎨 Appearance</h3>
-            
+    <div class="settings-container">
+        <!-- ACCOUNT -->
+        <div class="settings-card">
+            <div class="settings-title">👤 Account</div>
+            <a href="edit-profile.html" class="setting-item" style="text-decoration:none;color:inherit;">
+                <span class="setting-label"><span>✏️</span> Edit Profile</span>
+                <span style="color:var(--text-muted);">›</span>
+            </a>
+            <div class="setting-item" onclick="changePassword()" style="cursor:pointer;">
+                <span class="setting-label"><span>🔑</span> Change Password</span>
+                <span style="color:var(--text-muted);">›</span>
+            </div>
+        </div>
+
+        <!-- APPEARANCE -->
+        <div class="settings-card">
+            <div class="settings-title">🎨 Appearance</div>
             <div class="setting-item">
-                <span>🌙 Dark Theme</span>
+                <span class="setting-label"><span>🌙</span> Dark Theme</span>
                 <div class="toggle active" id="toggle-theme" onclick="toggleSetting('theme')">
                     <div class="toggle-knob"></div>
                 </div>
             </div>
-            
             <div class="setting-item">
-                <span>🔊 Sound Effects</span>
+                <span class="setting-label"><span>🔊</span> Sound Effects</span>
                 <div class="toggle active" id="toggle-sound" onclick="toggleSetting('sound')">
                     <div class="toggle-knob"></div>
                 </div>
             </div>
-            
             <div class="setting-item">
-                <span>✨ Reduce Animations</span>
+                <span class="setting-label"><span>✨</span> Reduce Animations</span>
                 <div class="toggle" id="toggle-animations" onclick="toggleSetting('animations')">
                     <div class="toggle-knob"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Privacy -->
-        <div class="card">
-            <h3 style="font-size:16px;margin-bottom:12px;">🔒 Privacy</h3>
-            
+        <!-- NOTIFICATIONS -->
+        <div class="settings-card">
+            <div class="settings-title">🔔 Notifications</div>
             <div class="setting-item">
-                <span>👁️ Show Online Status</span>
-                <div class="toggle active" id="toggle-online" onclick="toggleSetting('online')">
-                    <div class="toggle-knob"></div>
-                </div>
-            </div>
-            
-            <div class="setting-item">
-                <span>📅 Show Last Seen</span>
-                <div class="toggle active" id="toggle-lastseen" onclick="toggleSetting('lastseen')">
-                    <div class="toggle-knob"></div>
-                </div>
-            </div>
-            
-            <div class="setting-item">
-                <span>✓ Read Receipts</span>
-                <div class="toggle active" id="toggle-read" onclick="toggleSetting('read')">
-                    <div class="toggle-knob"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Notifications -->
-        <div class="card">
-            <h3 style="font-size:16px;margin-bottom:12px;">🔔 Notifications</h3>
-            
-            <div class="setting-item">
-                <span>💬 Messages</span>
+                <span class="setting-label"><span>💬</span> Messages</span>
                 <div class="toggle active" id="toggle-msg" onclick="toggleSetting('msg')">
                     <div class="toggle-knob"></div>
                 </div>
             </div>
-            
             <div class="setting-item">
-                <span>👥 Friend Requests</span>
+                <span class="setting-label"><span>👥</span> Friend Requests</span>
                 <div class="toggle active" id="toggle-friend" onclick="toggleSetting('friend')">
                     <div class="toggle-knob"></div>
                 </div>
             </div>
-            
             <div class="setting-item">
-                <span>🎁 Daily Rewards</span>
+                <span class="setting-label"><span>🎁</span> Daily Rewards</span>
                 <div class="toggle active" id="toggle-reward" onclick="toggleSetting('reward')">
                     <div class="toggle-knob"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Data -->
-        <div class="card">
-            <h3 style="font-size:16px;margin-bottom:12px;">💾 Data</h3>
-            
-            <div class="setting-item" onclick="clearCache()" style="cursor:pointer;">
-                <span>🗑️ Clear Local Cache</span>
+        <!-- PRIVACY -->
+        <div class="settings-card">
+            <div class="settings-title">🔒 Privacy</div>
+            <div class="setting-item">
+                <span class="setting-label"><span>👁️</span> Show Online Status</span>
+                <div class="toggle active" id="toggle-online" onclick="toggleSetting('online')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label"><span>📅</span> Show Last Seen</span>
+                <div class="toggle active" id="toggle-lastseen" onclick="toggleSetting('lastseen')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA -->
+        <div class="settings-card">
+            <div class="settings-title">💾 Data</div>
+            <div class="setting-item" onclick="clearLocalData()" style="cursor:pointer;">
+                <span class="setting-label"><span>🗑️</span> Clear Local Cache</span>
                 <span style="color:var(--text-muted);">›</span>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label"><span>ℹ️</span> App Version</span>
+                <span style="color:var(--text-muted);font-size:12px;">v1.0.0</span>
             </div>
         </div>
     </div>
 
-    <style>
-        .setting-item {
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:14px 0;
-            border-bottom:1px solid var(--border);
-            font-size:14px;
-        }
-        .setting-item:last-child {
-            border-bottom:none;
-        }
-        .toggle {
-            width:44px;
-            height:24px;
-            background:var(--bg-primary);
-            border-radius:12px;
-            cursor:pointer;
-            position:relative;
-            transition:background 0.3s;
-        }
-        .toggle.active {
-            background:linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-        }
-        .toggle-knob {
-            position:absolute;
-            top:2px;
-            left:2px;
-            width:20px;
-            height:20px;
-            background:white;
-            border-radius:50%;
-            transition:left 0.3s;
-        }
-        .toggle.active .toggle-knob {
-            left:22px;
-        }
-    </style>
-
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
     <script>
@@ -156,22 +178,20 @@
             }
             loadSettings();
         });
-        
+
         function loadSettings() {
             var settings = JSON.parse(localStorage.getItem('vexa_settings') || '{}');
             
-            var keys = ['theme', 'sound', 'animations', 'online', 'lastseen', 'read', 'msg', 'friend', 'reward'];
+            var keys = ['theme', 'sound', 'animations', 'msg', 'friend', 'reward', 'online', 'lastseen'];
             
             keys.forEach(function(key) {
                 var toggle = document.getElementById('toggle-' + key);
-                if (toggle) {
-                    if (settings[key] === false) {
-                        toggle.classList.remove('active');
-                    }
+                if (toggle && settings[key] === false) {
+                    toggle.classList.remove('active');
                 }
             });
         }
-        
+
         function toggleSetting(key) {
             var toggle = document.getElementById('toggle-' + key);
             toggle.classList.toggle('active');
@@ -182,13 +202,35 @@
             
             Utils.showToast('Setting saved!', 'success');
         }
-        
-        function clearCache() {
-            if (confirm('Clear local cache?')) {
+
+        function changePassword() {
+            var user = auth.currentUser;
+            if (!user || !user.email) {
+                Utils.showToast('Email not available', 'error');
+                return;
+            }
+            
+            auth.sendPasswordResetEmail(user.email).then(function() {
+                Utils.showToast('Password reset email sent!', 'success');
+            }).catch(function(error) {
+                Utils.showToast('Failed to send reset email', 'error');
+            });
+        }
+
+        function clearLocalData() {
+            if (confirm('Clear local cache? This will not delete your account data.')) {
                 localStorage.removeItem('vexa_settings');
-                Utils.showToast('Cache cleared!', 'success');
+                
+                // Clear IndexedDB
+                var request = indexedDB.deleteDatabase('VEXADB');
+                request.onsuccess = function() {
+                    Utils.showToast('Local cache cleared!', 'success');
+                };
+                request.onerror = function() {
+                    Utils.showToast('Failed to clear cache', 'error');
+                };
             }
         }
     </script>
 </body>
-</html>a
+                    </html>
