@@ -5,15 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEXA - Home</title>
     <link rel="stylesheet" href="css/global.css">
+    <style>
+        /* Header Styles */
+        .home-header {
+            text-align: center;
+            padding: 20px 16px 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        .home-logo {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #FFFFFF, #00D4FF, #6C3CE1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+        .home-tagline {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .user-info-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .user-info-bar:hover {
+            border-color: var(--accent-purple);
+        }
+        .user-details {
+            text-align: left;
+            flex: 1;
+        }
+        .user-display-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+        .user-username {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+    </style>
 </head>
 <body>
-    <div class="app-header">
-        <a href="home.html" class="app-logo">VEXA</a>
-        <a href="notifications.html" style="text-decoration:none;font-size:22px;">🔔</a>
+    <!-- Header with Logo and User Info -->
+    <div class="home-header">
+        <div class="home-logo">VEXA</div>
+        <p class="home-tagline">Future of Social Gaming</p>
+        
+        <div class="user-info-bar" onclick="goToProfile()">
+            <div class="avatar" id="home-avatar" style="width:48px;height:48px;font-size:20px;">?</div>
+            <div class="user-details">
+                <div class="user-display-name" id="home-display-name">Loading...</div>
+                <div class="user-username" id="home-username">@username</div>
+            </div>
+            <span style="color:var(--text-muted);font-size:20px;">›</span>
+        </div>
     </div>
 
-    <div class="container">
-        <!-- Stats - Primary Dashboard -->
+    <div class="container" style="padding-top:16px;">
+        <!-- Stats -->
         <div class="stats-grid" id="stats-grid">
             <div class="stat-card">
                 <div class="stat-value" id="home-coins">--</div>
@@ -34,7 +96,7 @@
         </div>
 
         <!-- Daily Reward -->
-        <div class="card" id="daily-reward-card">
+        <div class="card">
             <h3 style="font-size:16px;margin-bottom:12px;">🎁 Daily Reward</h3>
             <div id="daily-reward-content">
                 <p style="color:var(--text-muted);font-size:13px;">Loading...</p>
@@ -44,10 +106,8 @@
         <!-- Daily Challenge -->
         <div class="card">
             <h3 style="font-size:16px;margin-bottom:12px;">🎯 Daily Challenge</h3>
-            <div id="daily-challenge">
-                <p style="color:var(--text-muted);font-size:13px;">Play 3 games today</p>
-                <button class="btn btn-primary btn-small" onclick="playRound()" style="margin-top:8px;">PLAY ROUND</button>
-            </div>
+            <p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">Play any game to complete today's challenge</p>
+            <button class="btn btn-primary" onclick="playRandomGame()" style="width:100%;">PLAY ROUND</button>
         </div>
 
         <!-- Play Now -->
@@ -84,7 +144,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/state.js"></script>
     <script src="js/home.js"></script>
 </body>
-</html>
+                                                                                </html>
